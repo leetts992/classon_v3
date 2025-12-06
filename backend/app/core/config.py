@@ -27,6 +27,8 @@ class Settings(BaseSettings):
     BACKEND_CORS_ORIGINS: List[str] = [
         "http://localhost:3000",
         "http://localhost:8000",
+        "https://classon-v2.vercel.app",
+        "https://*.vercel.app",  # All Vercel preview deployments
     ]
 
     # AWS S3
