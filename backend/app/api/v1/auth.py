@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
+from pydantic import BaseModel, EmailStr
 from app.core.database import get_db
-from app.core.security import verify_password, create_access_token
+from app.core.security import verify_password, create_access_token, get_password_hash
 from app.core.dependencies import get_current_instructor
 from app.schemas.auth import Token, LoginRequest
 from app.schemas.user import UserCreate, UserResponse
@@ -161,3 +162,61 @@ async def update_current_instructor_profile(
     # Update instructor
     updated_instructor = await instructor_crud.update_instructor(db, current_instructor, instructor_update)
     return updated_instructor
+
+
+# Pydantic models for password reset
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+
+class ResetPasswordRequest(BaseModel):
+    email: EmailStr
+    new_password: str
+
+
+@router.post("/auth/forgot-password")
+async def forgot_password(
+    request: ForgotPasswordRequest,
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    비밀번호 찾기 (간단한 버전 - 이메일 인증 없이)
+    실제 프로덕션에서는 이메일 인증 토큰을 보내야 합니다
+    """
+    # Check if instructor exists
+    instructor = await instructor_crud.get_instructor_by_email(db, email=request.email)
+
+    # 보안상 이메일 존재 여부를 알려주지 않음
+    # 항상 성공 메시지 반환
+    return {
+        "message": "이메일이 등록되어 있다면 비밀번호 재설정 안내를 발송했습니다.",
+        "email": request.email
+    }
+
+
+@router.post("/auth/reset-password")
+async def reset_password(
+    request: ResetPasswordRequest,
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    비밀번호 재설정 (간단한 버전)
+    실제 프로덕션에서는 토큰 검증이 필요합니다
+    """
+    # Check if instructor exists
+    instructor = await instructor_crud.get_instructor_by_email(db, email=request.email)
+
+    if not instructor:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="해당 이메일로 등록된 계정을 찾을 수 없습니다."
+        )
+
+    # Update password
+    instructor.hashed_password = get_password_hash(request.new_password)
+    db.add(instructor)
+    await db.commit()
+
+    return {
+        "message": "비밀번호가 성공적으로 변경되었습니다."
+    }
