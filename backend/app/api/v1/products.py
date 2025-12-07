@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import APIRouter, Depends, HTTPException, status, Query, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
 from app.core.database import get_db
@@ -149,9 +149,13 @@ async def get_public_store_products(
     subdomain: str,
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=100),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
+    response: Response = None
 ):
     """Get published products for a store (public access)"""
+    # Add caching headers
+    if response:
+        response.headers["Cache-Control"] = "public, max-age=60"  # Cache for 60 seconds
     # Find instructor by subdomain
     instructor = await instructor_crud.get_instructor_by_subdomain(db, subdomain=subdomain)
 
@@ -175,9 +179,14 @@ async def get_public_store_products(
 @router.get("/public/store/{subdomain}/info")
 async def get_public_store_info(
     subdomain: str,
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
+    response: Response = None
 ):
     """Get store information (public access)"""
+    # Add caching headers
+    if response:
+        response.headers["Cache-Control"] = "public, max-age=60"  # Cache for 60 seconds
+
     instructor = await instructor_crud.get_instructor_by_subdomain(db, subdomain=subdomain)
 
     if not instructor:
