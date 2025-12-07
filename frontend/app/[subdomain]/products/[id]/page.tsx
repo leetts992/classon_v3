@@ -173,29 +173,28 @@ export default function ProductDetailPage() {
             </h1>
 
             {/* 가격 정보 */}
-            <div className="space-y-2">
+            <div className="space-y-1">
               {hasDiscount && (
                 <>
                   <div className="flex items-center gap-2">
-                    <span className="text-gray-400 line-through text-lg">
+                    <span className="text-gray-400 line-through text-base">
                       {formatPrice(product.price)}
                     </span>
-                    <span className="text-[#FF8547] font-bold text-xl">
-                      {calculateDiscountRate(product.price, product.discount_price!)}% 할인
-                    </span>
                   </div>
-                  <div className="text-3xl font-bold text-[#FF8547]">
-                    월 {formatPrice(product.discount_price!)}
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-[#FF8547] font-bold text-3xl">
+                      {calculateDiscountRate(product.price, product.discount_price!)}%
+                    </span>
+                    <span className="text-2xl font-bold text-[#FF8547]">
+                      {formatPrice(product.discount_price!)}
+                    </span>
                   </div>
                 </>
               )}
               {!hasDiscount && (
-                <div className="text-3xl font-bold text-gray-900">
+                <div className="text-2xl font-bold text-gray-900">
                   {formatPrice(product.price)}
                 </div>
-              )}
-              {hasDiscount && (
-                <p className="text-sm text-gray-500">최대 12개월 무이자 할부 시</p>
               )}
             </div>
           </div>
@@ -292,21 +291,22 @@ export default function ProductDetailPage() {
                 </h1>
 
                 {/* 가격 정보 */}
-                <div className="space-y-2">
+                <div className="space-y-1">
                   {hasDiscount && (
                     <>
                       <div className="flex items-center gap-2">
                         <span className="text-gray-400 line-through text-lg">
                           {formatPrice(product.price)}
                         </span>
-                        <span className="text-[#FF8547] font-bold text-xl">
-                          {calculateDiscountRate(product.price, product.discount_price!)}% 할인
+                      </div>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-[#FF8547] font-bold text-4xl">
+                          {calculateDiscountRate(product.price, product.discount_price!)}%
+                        </span>
+                        <span className="text-3xl font-bold text-[#FF8547]">
+                          {formatPrice(product.discount_price!)}
                         </span>
                       </div>
-                      <div className="text-3xl font-bold text-[#FF8547]">
-                        월 {formatPrice(product.discount_price!)}
-                      </div>
-                      <p className="text-sm text-gray-500">최대 12개월 무이자 할부 시</p>
                     </>
                   )}
                   {!hasDiscount && (

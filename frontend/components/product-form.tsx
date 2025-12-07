@@ -289,12 +289,14 @@ export function ProductForm({ product }: ProductFormProps) {
                         <span className="text-gray-400 line-through text-sm">
                           {parseInt(price).toLocaleString()}원
                         </span>
-                        <span className="text-[#FF8547] font-bold text-base">
-                          {Math.round(((parseInt(price) - parseInt(discountPrice)) / parseInt(price)) * 100)}% 할인
-                        </span>
                       </div>
-                      <div className="text-xl font-bold text-[#FF8547]">
-                        월 {parseInt(discountPrice).toLocaleString()}원
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-[#FF8547] font-bold text-2xl">
+                          {Math.round(((parseInt(price) - parseInt(discountPrice)) / parseInt(price)) * 100)}%
+                        </span>
+                        <span className="text-xl font-bold text-[#FF8547]">
+                          {parseInt(discountPrice).toLocaleString()}원
+                        </span>
                       </div>
                     </>
                   )}
@@ -526,11 +528,11 @@ export function ProductForm({ product }: ProductFormProps) {
                         />
                         <Input
                           type="number"
-                          placeholder="가격 (선택, 원)"
-                          value={option.price || ''}
+                          placeholder="가격 (0원 가능)"
+                          value={option.price !== undefined ? option.price : ''}
                           onChange={(e) => {
                             const newOptions = [...productOptions];
-                            newOptions[idx].price = e.target.value ? parseInt(e.target.value) : undefined;
+                            newOptions[idx].price = e.target.value !== '' ? parseInt(e.target.value) : undefined;
                             setProductOptions(newOptions);
                           }}
                         />

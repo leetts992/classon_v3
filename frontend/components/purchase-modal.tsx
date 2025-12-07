@@ -195,10 +195,9 @@ export default function PurchaseModal({
             <div className="flex items-center justify-between pt-3 mt-3 border-t border-gray-200">
               <span className="text-base font-bold text-gray-900">총 결제 금액</span>
               <span className="text-xl font-bold text-[#FF8547]">
-                월 {formatPrice(calculateTotalPrice())}
+                {formatPrice(calculateTotalPrice())}
               </span>
             </div>
-            <p className="text-xs text-gray-500 mt-1 text-right">최대 12개월 무이자 할부 시</p>
           </div>
         </div>
 
