@@ -14,12 +14,13 @@ import {
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { instructorAPI, BannerSlide } from "@/lib/api";
+import { instructorAPI, BannerSlide, uploadAPI } from "@/lib/api";
 
 export default function SettingsPage() {
   const [isCopied, setIsCopied] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploadingBannerId, setUploadingBannerId] = useState<string | null>(null);
   const [settings, setSettings] = useState({
     storeName: "",
     subdomain: "",
@@ -176,6 +177,37 @@ export default function SettingsPage() {
     });
 
     setBannerSlides(newSlides);
+  };
+
+  const handleImageUpload = async (bannerId: string, file: File) => {
+    try {
+      setUploadingBannerId(bannerId);
+      const response = await uploadAPI.uploadImage(file);
+      updateBannerSlide(bannerId, "image_url", response.url);
+      alert("이미지 업로드 완료!");
+    } catch (error: any) {
+      console.error("Failed to upload image:", error);
+      alert(error.message || "이미지 업로드에 실패했습니다.");
+    } finally {
+      setUploadingBannerId(null);
+    }
+  };
+
+  const handleFileSelect = (bannerId: string, event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Check file type
+      if (!file.type.startsWith('image/')) {
+        alert('이미지 파일만 업로드 가능합니다.');
+        return;
+      }
+      // Check file size (5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('파일 크기는 5MB 이하여야 합니다.');
+        return;
+      }
+      handleImageUpload(bannerId, file);
+    }
   };
 
   if (loading) {
@@ -557,16 +589,37 @@ export default function SettingsPage() {
                       </CardHeader>
                       <CardContent className="space-y-4">
                         <div className="space-y-2">
-                          <Label>배너 이미지 URL *</Label>
-                          <Input
-                            value={slide.image_url}
-                            onChange={(e) =>
-                              updateBannerSlide(slide.id, "image_url", e.target.value)
-                            }
-                            placeholder="https://example.com/banner.jpg"
-                          />
+                          <Label>배너 이미지 *</Label>
+                          <div className="flex gap-2">
+                            <Input
+                              value={slide.image_url}
+                              onChange={(e) =>
+                                updateBannerSlide(slide.id, "image_url", e.target.value)
+                              }
+                              placeholder="https://example.com/banner.jpg 또는 파일 업로드"
+                              className="flex-1"
+                            />
+                            <div className="relative">
+                              <input
+                                type="file"
+                                accept="image/*"
+                                onChange={(e) => handleFileSelect(slide.id, e)}
+                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                disabled={uploadingBannerId === slide.id}
+                              />
+                              <Button
+                                type="button"
+                                variant="outline"
+                                disabled={uploadingBannerId === slide.id}
+                                className="gap-2 whitespace-nowrap"
+                              >
+                                <Upload className="h-4 w-4" />
+                                {uploadingBannerId === slide.id ? "업로드 중..." : "파일 선택"}
+                              </Button>
+                            </div>
+                          </div>
                           <p className="text-sm text-muted-foreground">
-                            권장 크기: 1920x600px (JPG, PNG)
+                            권장 크기: 1920x600px (JPG, PNG, 최대 5MB)
                           </p>
                         </div>
 
