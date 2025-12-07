@@ -29,6 +29,12 @@ class Instructor(Base):
     footer_business_hours = Column(String, nullable=True)
     footer_address = Column(String, nullable=True)
 
+    # Kakao Login Settings
+    kakao_client_id = Column(String, nullable=True)  # REST API 키
+    kakao_client_secret = Column(String, nullable=True)  # 암호화 저장 필요
+    kakao_redirect_uri = Column(String, nullable=True)  # 리다이렉트 URI
+    kakao_enabled = Column(Boolean, default=False)  # 카카오 로그인 활성화 여부
+
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 

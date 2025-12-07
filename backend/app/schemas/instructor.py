@@ -36,6 +36,12 @@ class InstructorUpdate(BaseModel):
     footer_business_hours: Optional[str] = None
     footer_address: Optional[str] = None
 
+    # Kakao Login Settings
+    kakao_client_id: Optional[str] = None
+    kakao_client_secret: Optional[str] = None
+    kakao_redirect_uri: Optional[str] = None
+    kakao_enabled: Optional[bool] = None
+
 
 # Properties to return to client
 class InstructorResponse(InstructorBase):
@@ -54,6 +60,9 @@ class InstructorResponse(InstructorBase):
     footer_contact: Optional[str] = None
     footer_business_hours: Optional[str] = None
     footer_address: Optional[str] = None
+
+    # Kakao Login Settings (don't expose client_secret!)
+    kakao_enabled: Optional[bool] = False
 
     class Config:
         from_attributes = True
