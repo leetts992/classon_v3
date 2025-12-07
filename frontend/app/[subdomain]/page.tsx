@@ -113,8 +113,31 @@ export default function StorePage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-lg text-gray-600">로딩 중...</p>
+      <div className="flex flex-col min-h-screen">
+        <StoreHeader storeName="로딩 중..." />
+
+        {/* Skeleton Banner */}
+        <div className="w-full h-[280px] md:h-[350px] lg:h-[420px] bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 animate-pulse" />
+
+        {/* Skeleton Products */}
+        <main className="flex-1 py-16">
+          <div className="container">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <div key={i} className="bg-white rounded-lg shadow-md overflow-hidden animate-pulse">
+                  <div className="w-full h-48 bg-gray-300" />
+                  <div className="p-4 space-y-3">
+                    <div className="h-4 bg-gray-300 rounded w-3/4" />
+                    <div className="h-4 bg-gray-300 rounded w-1/2" />
+                    <div className="h-8 bg-gray-300 rounded w-full mt-4" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </main>
+
+        <footer className="bg-gray-100 h-64 animate-pulse" />
       </div>
     );
   }
