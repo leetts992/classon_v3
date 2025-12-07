@@ -251,7 +251,7 @@ export default function ProductDetailPage() {
               )}
 
               {/* 탭 메뉴 - 항상 표시, 스크롤 시 상단 고정 */}
-              <div className="border-b border-gray-200 sticky top-0 bg-white z-10 py-2">
+              <div className="border-b border-gray-200 sticky top-16 bg-white z-20 py-2 shadow-sm">
                 <div className="flex gap-8">
                   <button
                     onClick={() => scrollToSection('description-section', 'description')}
@@ -427,7 +427,7 @@ export default function ProductDetailPage() {
           </div>
 
           {/* 모바일: 탭 메뉴 - 항상 표시, 스크롤 시 상단 고정 */}
-          <div className="lg:hidden border-b border-gray-200 mb-6 sticky top-0 bg-white z-10 py-2">
+          <div className="lg:hidden border-b border-gray-200 mb-6 sticky top-14 bg-white z-20 py-2 shadow-sm">
             <div className="flex gap-4 overflow-x-auto">
               <button
                 onClick={() => scrollToSection('mobile-description', 'description')}
