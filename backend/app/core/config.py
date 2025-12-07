@@ -29,6 +29,9 @@ class Settings(BaseSettings):
         "http://localhost:8000",
         "https://classon-v2.vercel.app",
         "https://*.vercel.app",  # All Vercel preview deployments
+        "https://class-on.kr",
+        "https://www.class-on.kr",
+        "https://api.class-on.kr",
     ]
 
     # AWS S3
