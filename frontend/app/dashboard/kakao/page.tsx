@@ -14,6 +14,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { instructorAPI } from "@/lib/api";
 
 export default function KakaoSettingsPage() {
@@ -26,6 +27,7 @@ export default function KakaoSettingsPage() {
     kakaoClientId: "",
     kakaoClientSecret: "",
     kakaoRedirectUri: "",
+    kakaoChannelId: "",
   });
 
   // Load instructor data on mount
@@ -40,6 +42,7 @@ export default function KakaoSettingsPage() {
           kakaoClientId: (instructor as any).kakao_client_id || "",
           kakaoClientSecret: "", // Never load secret from API
           kakaoRedirectUri: (instructor as any).kakao_redirect_uri || "",
+          kakaoChannelId: (instructor as any).kakao_channel_id || "",
         });
       } catch (error) {
         console.error("Failed to fetch instructor data:", error);
@@ -67,8 +70,11 @@ export default function KakaoSettingsPage() {
         updateData.kakao_client_secret = settings.kakaoClientSecret;
       }
 
+      // Add kakao channel ID
+      updateData.kakao_channel_id = settings.kakaoChannelId;
+
       await instructorAPI.update(updateData);
-      alert("카카오 로그인 설정이 저장되었습니다!");
+      alert("카카오 설정이 저장되었습니다!");
 
       // Clear the secret field after save
       setSettings({ ...settings, kakaoClientSecret: "" });
@@ -101,9 +107,9 @@ export default function KakaoSettingsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">카카오 로그인 설정</h1>
+          <h1 className="text-3xl font-bold">카카오 관리</h1>
           <p className="text-muted-foreground">
-            고객이 카카오 계정으로 로그인할 수 있도록 설정합니다
+            카카오 로그인 및 상담톡을 설정합니다
           </p>
         </div>
         <Button onClick={handleSave} className="gap-2" disabled={saving || loading}>
@@ -111,6 +117,16 @@ export default function KakaoSettingsPage() {
           {saving ? "저장 중..." : "저장"}
         </Button>
       </div>
+
+      {/* Tabs */}
+      <Tabs defaultValue="login" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="login">카카오톡 로그인</TabsTrigger>
+          <TabsTrigger value="channel">카카오톡 상담톡</TabsTrigger>
+        </TabsList>
+
+        {/* 카카오톡 로그인 탭 */}
+        <TabsContent value="login" className="space-y-6">
 
       {/* Enable/Disable Toggle */}
       <Card>
@@ -430,6 +446,106 @@ export default function KakaoSettingsPage() {
           </CardContent>
         </Card>
       )}
+        </TabsContent>
+
+        {/* 카카오톡 상담톡 탭 */}
+        <TabsContent value="channel" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>카카오 채널 상담톡</CardTitle>
+              <CardDescription>
+                고객이 쇼핑몰에서 카카오톡으로 문의할 수 있도록 상담톡 버튼을 추가합니다
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="kakaoChannelId">카카오 채널 ID</Label>
+                <Input
+                  id="kakaoChannelId"
+                  value={settings.kakaoChannelId}
+                  onChange={(e) =>
+                    setSettings({ ...settings, kakaoChannelId: e.target.value })
+                  }
+                  placeholder="예: _xhFxoId"
+                  className="font-mono"
+                />
+                <p className="text-sm text-muted-foreground">
+                  카카오 채널 관리자센터에서 확인할 수 있습니다 (언더바 _ 로 시작)
+                </p>
+              </div>
+
+              <div className="p-4 bg-muted/50 rounded-lg space-y-3">
+                <p className="text-sm font-medium">카카오 채널 ID 확인 방법:</p>
+                <ol className="text-sm text-muted-foreground space-y-2">
+                  <li className="flex items-start gap-2">
+                    <span className="font-bold">1.</span>
+                    <span>
+                      <a
+                        href="https://center-pf.kakao.com/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary hover:underline inline-flex items-center gap-1"
+                      >
+                        카카오 채널 관리자센터
+                        <ExternalLink className="h-3 w-3" />
+                      </a>
+                      에 접속합니다
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="font-bold">2.</span>
+                    <span>관리 {'>'} 상세설정에서 채널 URL을 확인합니다</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="font-bold">3.</span>
+                    <span>
+                      URL 끝의 ID를 입력합니다 (예: http://pf.kakao.com/_xhFxoId
+                      → <code className="px-1 py-0.5 bg-muted rounded text-xs">_xhFxoId</code>)
+                    </span>
+                  </li>
+                </ol>
+              </div>
+
+              {settings.kakaoChannelId && (
+                <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                  <p className="text-sm text-green-800 font-medium mb-2">
+                    ✓ 채널 ID가 입력되었습니다
+                  </p>
+                  <p className="text-sm text-green-700">
+                    저장 후 쇼핑몰 우측 하단에 상담톡 버튼이 표시됩니다
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card className="border-blue-200 bg-blue-50">
+            <CardHeader>
+              <CardTitle className="text-blue-900">안내</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3 text-sm text-blue-800">
+              <div className="flex items-start gap-2">
+                <span className="font-bold">•</span>
+                <p>
+                  카카오 채널이 없는 경우, 먼저 카카오 채널을 생성해야 합니다
+                </p>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="font-bold">•</span>
+                <p>
+                  상담톡 버튼은 모든 쇼핑몰 페이지 우측 하단에 고정으로 표시됩니다
+                </p>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="font-bold">•</span>
+                <p>
+                  고객이 버튼을 클릭하면 카카오톡 앱 또는 웹에서 채널 채팅이 열립니다
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

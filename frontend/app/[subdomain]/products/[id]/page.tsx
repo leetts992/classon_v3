@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import StoreHeader from "@/components/store/StoreHeader";
 import StoreFooter from "@/components/store/StoreFooter";
+import KakaoChannelButton from "@/components/store/KakaoChannelButton";
 import { publicStoreAPI, Product as APIProduct, StoreInfo } from "@/lib/api";
 import { ShoppingCart, Clock, BookOpen, Flame } from "lucide-react";
 
@@ -244,6 +245,11 @@ export default function ProductDetailPage() {
       </div>
 
       {storeInfo && <StoreFooter storeInfo={storeInfo} />}
+
+      {/* Kakao Channel Chat Button */}
+      {storeInfo?.kakao_channel_id && (
+        <KakaoChannelButton channelId={storeInfo.kakao_channel_id} />
+      )}
     </div>
   );
 }

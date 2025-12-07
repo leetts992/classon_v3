@@ -38,6 +38,9 @@ export default function SettingsPage() {
     footerContact: "",
     footerBusinessHours: "",
     footerAddress: "",
+
+    // Kakao Channel
+    kakaoChannelId: "",
   });
 
   const [bannerSlides, setBannerSlides] = useState<BannerSlide[]>([]);
@@ -65,6 +68,9 @@ export default function SettingsPage() {
           footerContact: instructor.footer_contact || "",
           footerBusinessHours: instructor.footer_business_hours || "",
           footerAddress: instructor.footer_address || "",
+
+          // Kakao Channel
+          kakaoChannelId: instructor.kakao_channel_id || "",
         });
 
         // Load banner slides
@@ -128,6 +134,9 @@ export default function SettingsPage() {
 
         // Banner slides
         banner_slides: bannerSlides,
+
+        // Kakao Channel
+        kakao_channel_id: settings.kakaoChannelId,
       });
       alert("설정이 저장되었습니다!");
     } catch (error: any) {
@@ -645,30 +654,6 @@ export default function SettingsPage() {
                           <p className="text-sm text-muted-foreground">
                             권장 크기: 1920x600px (JPG, PNG, 최대 5MB)
                           </p>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="space-y-2">
-                            <Label>제목 (선택)</Label>
-                            <Input
-                              value={slide.title || ""}
-                              onChange={(e) =>
-                                updateBannerSlide(slide.id, "title", e.target.value)
-                              }
-                              placeholder="무료 쇼핑몰로 4개월만에 매출 1억!"
-                            />
-                          </div>
-
-                          <div className="space-y-2">
-                            <Label>부제목 (선택)</Label>
-                            <Input
-                              value={slide.subtitle || ""}
-                              onChange={(e) =>
-                                updateBannerSlide(slide.id, "subtitle", e.target.value)
-                              }
-                              placeholder="12/17(수) 오후 7시 30분 무료강의"
-                            />
-                          </div>
                         </div>
 
                         <div className="space-y-2">

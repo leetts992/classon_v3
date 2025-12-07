@@ -6,6 +6,7 @@ import StoreHeader from "@/components/store/StoreHeader";
 import StoreFooter from "@/components/store/StoreFooter";
 import Banner from "@/components/store/Banner";
 import ProductGrid from "@/components/store/ProductGrid";
+import KakaoChannelButton from "@/components/store/KakaoChannelButton";
 import { publicStoreAPI, Product as APIProduct, StoreInfo } from "@/lib/api";
 import { Product } from "@/types";
 
@@ -207,6 +208,11 @@ export default function StorePage() {
       </main>
 
       {storeInfo && <StoreFooter storeInfo={storeInfo} />}
+
+      {/* Kakao Channel Chat Button */}
+      {storeInfo?.kakao_channel_id && (
+        <KakaoChannelButton channelId={storeInfo.kakao_channel_id} />
+      )}
     </div>
   );
 }

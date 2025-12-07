@@ -78,28 +78,9 @@ export default function Banner({
           >
             <img
               src={slide.imageUrl}
-              alt={slide.title || `Slide ${index + 1}`}
+              alt={`Slide ${index + 1}`}
               className="w-full h-full object-cover"
             />
-            {/* 오버레이 그라데이션 */}
-            {(slide.title || slide.subtitle) && (
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent">
-                <div className="container h-full flex items-end pb-16">
-                  <div className="text-white space-y-4">
-                    {slide.title && (
-                      <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold">
-                        {slide.title}
-                      </h2>
-                    )}
-                    {slide.subtitle && (
-                      <p className="text-lg md:text-xl text-white/90">
-                        {slide.subtitle}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
         ))}
       </div>

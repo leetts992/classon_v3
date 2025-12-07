@@ -515,6 +515,9 @@ export interface StoreInfo {
 
   // Banner slides
   banner_slides?: BannerSlide[];
+
+  // Kakao Channel Chat
+  kakao_channel_id?: string;
 }
 
 // Public Store API (no authentication required)

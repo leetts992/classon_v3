@@ -45,6 +45,9 @@ class InstructorUpdate(BaseModel):
     kakao_redirect_uri: Optional[str] = None
     kakao_enabled: Optional[bool] = None
 
+    # Kakao Channel Chat
+    kakao_channel_id: Optional[str] = None
+
 
 # Properties to return to client
 class InstructorResponse(InstructorBase):
@@ -71,6 +74,9 @@ class InstructorResponse(InstructorBase):
     kakao_enabled: Optional[bool] = False
     kakao_client_id: Optional[str] = None
     kakao_redirect_uri: Optional[str] = None
+
+    # Kakao Channel Chat
+    kakao_channel_id: Optional[str] = None
 
     class Config:
         from_attributes = True

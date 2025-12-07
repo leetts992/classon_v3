@@ -39,6 +39,9 @@ class Instructor(Base):
     kakao_redirect_uri = Column(String, nullable=True)  # 리다이렉트 URI
     kakao_enabled = Column(Boolean, default=False)  # 카카오 로그인 활성화 여부
 
+    # Kakao Channel Chat
+    kakao_channel_id = Column(String, nullable=True)  # 카카오 채널 ID (_로 시작)
+
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 

@@ -203,6 +203,8 @@ async def get_public_store_info(
         "footer_address": instructor.footer_address,
         # Banner slides
         "banner_slides": instructor.banner_slides or [],
+        # Kakao Channel Chat
+        "kakao_channel_id": instructor.kakao_channel_id,
     }
 
 
