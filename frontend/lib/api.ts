@@ -232,6 +232,12 @@ export interface InstructorUpdateRequest {
   footer_contact?: string;
   footer_business_hours?: string;
   footer_address?: string;
+
+  // Kakao Login Settings
+  kakao_client_id?: string;
+  kakao_client_secret?: string;
+  kakao_redirect_uri?: string;
+  kakao_enabled?: boolean;
 }
 
 // Instructor API (alias for convenience)

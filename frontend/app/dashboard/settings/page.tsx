@@ -41,6 +41,12 @@ export default function SettingsPage() {
     footerContact: "",
     footerBusinessHours: "",
     footerAddress: "",
+
+    // Kakao Login Settings
+    kakaoEnabled: false,
+    kakaoClientId: "",
+    kakaoClientSecret: "",
+    kakaoRedirectUri: "",
   });
 
   // Load instructor data on mount
@@ -69,6 +75,12 @@ export default function SettingsPage() {
           footerContact: instructor.footer_contact || "",
           footerBusinessHours: instructor.footer_business_hours || "",
           footerAddress: instructor.footer_address || "",
+
+          // Kakao Login Settings
+          kakaoEnabled: (instructor as any).kakao_enabled || false,
+          kakaoClientId: (instructor as any).kakao_client_id || "",
+          kakaoClientSecret: "", // Never load secret from API
+          kakaoRedirectUri: (instructor as any).kakao_redirect_uri || "",
         });
       } catch (error) {
         console.error("Failed to fetch instructor data:", error);
@@ -108,7 +120,8 @@ export default function SettingsPage() {
   const handleSave = async () => {
     try {
       setSaving(true);
-      await instructorAPI.update({
+
+      const updateData: any = {
         full_name: settings.fullName,
         store_name: settings.storeName,
         subdomain: settings.subdomain,
@@ -125,8 +138,23 @@ export default function SettingsPage() {
         footer_contact: settings.footerContact,
         footer_business_hours: settings.footerBusinessHours,
         footer_address: settings.footerAddress,
-      });
+
+        // Kakao Login Settings
+        kakao_enabled: settings.kakaoEnabled,
+        kakao_client_id: settings.kakaoClientId,
+        kakao_redirect_uri: settings.kakaoRedirectUri,
+      };
+
+      // Only include secret if it was changed (not empty)
+      if (settings.kakaoClientSecret) {
+        updateData.kakao_client_secret = settings.kakaoClientSecret;
+      }
+
+      await instructorAPI.update(updateData);
       alert("설정이 저장되었습니다!");
+
+      // Clear the secret field after save
+      setSettings({ ...settings, kakaoClientSecret: "" });
     } catch (error: any) {
       console.error("Failed to save settings:", error);
       alert(error.message || "설정 저장에 실패했습니다.");
@@ -484,6 +512,131 @@ export default function SettingsPage() {
               rows={2}
             />
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Kakao Login Settings */}
+      <Card>
+        <CardHeader>
+          <CardTitle>카카오 로그인 설정</CardTitle>
+          <CardDescription>
+            고객이 카카오 계정으로 로그인할 수 있도록 설정합니다
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label>카카오 로그인 활성화</Label>
+              <p className="text-sm text-muted-foreground">
+                고객이 카카오 계정으로 로그인할 수 있습니다
+              </p>
+            </div>
+            <Switch
+              checked={settings.kakaoEnabled}
+              onCheckedChange={(checked) =>
+                setSettings({ ...settings, kakaoEnabled: checked })
+              }
+            />
+          </div>
+
+          {settings.kakaoEnabled && (
+            <>
+              <Separator />
+
+              <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
+                <div className="space-y-2">
+                  <p className="text-sm font-medium">설정 가이드</p>
+                  <ol className="text-sm text-muted-foreground space-y-1 list-decimal list-inside">
+                    <li>
+                      <a
+                        href="https://developers.kakao.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary hover:underline"
+                      >
+                        Kakao Developers
+                      </a>
+                      에서 애플리케이션을 생성하세요
+                    </li>
+                    <li>REST API 키를 복사하여 아래에 입력하세요</li>
+                    <li>Client Secret을 생성하여 입력하세요 (보안 강화)</li>
+                    <li>Redirect URI를 카카오 개발자 콘솔에 등록하세요</li>
+                  </ol>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="kakaoClientId">REST API 키 (Client ID)</Label>
+                <Input
+                  id="kakaoClientId"
+                  value={settings.kakaoClientId}
+                  onChange={(e) =>
+                    setSettings({ ...settings, kakaoClientId: e.target.value })
+                  }
+                  placeholder="예: 1234567890abcdef1234567890abcdef"
+                  className="font-mono text-sm"
+                />
+                <p className="text-sm text-muted-foreground">
+                  Kakao Developers 콘솔의 앱 설정에서 확인할 수 있습니다
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="kakaoClientSecret">Client Secret (선택사항)</Label>
+                <Input
+                  id="kakaoClientSecret"
+                  type="password"
+                  value={settings.kakaoClientSecret}
+                  onChange={(e) =>
+                    setSettings({ ...settings, kakaoClientSecret: e.target.value })
+                  }
+                  placeholder={settings.kakaoClientId ? "변경하려면 입력하세요" : "Client Secret을 입력하세요"}
+                  className="font-mono text-sm"
+                />
+                <p className="text-sm text-muted-foreground">
+                  보안 강화를 위해 Client Secret 사용을 권장합니다
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="kakaoRedirectUri">Redirect URI</Label>
+                <div className="flex gap-2">
+                  <Input
+                    id="kakaoRedirectUri"
+                    value={settings.kakaoRedirectUri}
+                    onChange={(e) =>
+                      setSettings({ ...settings, kakaoRedirectUri: e.target.value })
+                    }
+                    placeholder={`https://${settings.subdomain}.class-on.kr/login`}
+                    className="font-mono text-sm"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      const uri = `https://${settings.subdomain}.class-on.kr/login`;
+                      setSettings({ ...settings, kakaoRedirectUri: uri });
+                    }}
+                  >
+                    자동 입력
+                  </Button>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  카카오 개발자 콘솔에 이 URI를 등록해야 합니다
+                </p>
+              </div>
+
+              <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <p className="text-sm text-yellow-800">
+                  <strong>중요:</strong> 카카오 개발자 콘솔에서 Redirect URI를{" "}
+                  <code className="bg-yellow-100 px-1 py-0.5 rounded">
+                    {settings.kakaoRedirectUri || `https://${settings.subdomain}.class-on.kr/login`}
+                  </code>
+                  로 등록해야 카카오 로그인이 정상 작동합니다.
+                </p>
+              </div>
+            </>
+          )}
         </CardContent>
       </Card>
 
