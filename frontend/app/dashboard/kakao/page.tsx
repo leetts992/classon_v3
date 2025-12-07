@@ -121,20 +121,39 @@ export default function KakaoSettingsPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label>카카오 로그인 사용</Label>
+          <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
+            <div className="space-y-1 flex-1">
+              <Label className="text-base font-semibold">카카오 로그인 사용</Label>
               <p className="text-sm text-muted-foreground">
                 활성화하면 고객이 카카오 계정으로 로그인할 수 있습니다
               </p>
             </div>
-            <Switch
-              checked={settings.kakaoEnabled}
-              onCheckedChange={(checked) =>
-                setSettings({ ...settings, kakaoEnabled: checked })
-              }
-            />
+            <div className="ml-4">
+              <Switch
+                checked={settings.kakaoEnabled}
+                onCheckedChange={(checked) =>
+                  setSettings({ ...settings, kakaoEnabled: checked })
+                }
+                className="scale-150"
+              />
+            </div>
           </div>
+
+          {settings.kakaoEnabled && (
+            <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+              <p className="text-sm text-green-800 font-medium">
+                ✓ 카카오 로그인이 활성화되었습니다
+              </p>
+            </div>
+          )}
+
+          {!settings.kakaoEnabled && (
+            <div className="mt-4 p-3 bg-gray-50 border border-gray-200 rounded-lg">
+              <p className="text-sm text-gray-600">
+                카카오 로그인을 사용하려면 위의 스위치를 켜주세요
+              </p>
+            </div>
+          )}
         </CardContent>
       </Card>
 
