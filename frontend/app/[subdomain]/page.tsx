@@ -141,11 +141,25 @@ export default function StorePage() {
 
       <main className="flex-1">
         <Banner
-          title={`${storeInfo?.full_name || '강사'}의 강의로 실력을 키우세요`}
-          subtitle={storeInfo?.bio || "다양한 강의를 만나보세요"}
-          imageUrl="https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=1200&h=800&fit=crop"
-          ctaText="전체 강의 보기"
-          ctaLink="#courses"
+          slides={
+            storeInfo?.banner_slides && storeInfo.banner_slides.length > 0
+              ? storeInfo.banner_slides.map((slide) => ({
+                  id: slide.id,
+                  imageUrl: slide.image_url,
+                  title: slide.title,
+                  subtitle: slide.subtitle,
+                  linkUrl: slide.link_url,
+                }))
+              : [
+                  {
+                    id: "default-slide",
+                    imageUrl: "https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=1920&h=600&fit=crop",
+                    title: `${storeInfo?.full_name || '강사'}의 강의로 실력을 키우세요`,
+                    subtitle: storeInfo?.bio || "다양한 강의를 만나보세요",
+                    linkUrl: "#courses",
+                  },
+                ]
+          }
         />
 
         {products.length === 0 ? (

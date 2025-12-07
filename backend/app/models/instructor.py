@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Boolean, DateTime, Text
+from sqlalchemy import Column, String, Boolean, DateTime, Text, JSON
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.core.database import Base
@@ -28,6 +28,10 @@ class Instructor(Base):
     footer_contact = Column(String, nullable=True)
     footer_business_hours = Column(String, nullable=True)
     footer_address = Column(String, nullable=True)
+
+    # Banner slides for store main page
+    # JSON array: [{"id": "...", "image_url": "...", "title": "...", "subtitle": "...", "link_url": "...", "order": 0}, ...]
+    banner_slides = Column(JSON, nullable=True, default=list)
 
     # Kakao Login Settings
     kakao_client_id = Column(String, nullable=True)  # REST API 키

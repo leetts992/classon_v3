@@ -33,6 +33,7 @@ class ProductBase(BaseModel):
     modal_count_hours: Optional[int] = 0
     modal_count_minutes: Optional[int] = 0
     modal_count_seconds: Optional[int] = 48
+    modal_end_time: Optional[datetime] = None
 
 
 class ProductCreate(ProductBase):
@@ -54,6 +55,7 @@ class ProductUpdate(BaseModel):
 
     # 결제 유도 모달 설정
     modal_bg_color: Optional[str] = None
+    modal_bg_opacity: Optional[int] = Field(None, ge=0, le=100)
     modal_text: Optional[str] = None
     modal_text_color: Optional[str] = None
     modal_button_text: Optional[str] = None
@@ -62,6 +64,7 @@ class ProductUpdate(BaseModel):
     modal_count_hours: Optional[int] = None
     modal_count_minutes: Optional[int] = None
     modal_count_seconds: Optional[int] = None
+    modal_end_time: Optional[datetime] = None
 
 
 class ProductResponse(ProductBase):

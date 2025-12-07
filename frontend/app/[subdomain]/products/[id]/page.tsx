@@ -20,10 +20,10 @@ export default function ProductDetailPage() {
 
   // 카운트다운 타이머 상태 (항상 최상위에서 선언)
   const [timeLeft, setTimeLeft] = useState({
-    days: 3,
+    days: 0,
     hours: 0,
     minutes: 0,
-    seconds: 48,
+    seconds: 0,
   });
 
   useEffect(() => {
@@ -32,46 +32,36 @@ export default function ProductDetailPage() {
     }
   }, [subdomain, productId]);
 
-  // product가 로드되면 카운트다운 초기값 설정
+  // modal_end_time 기준으로 실시간 카운트다운
   useEffect(() => {
-    if (product) {
-      setTimeLeft({
-        days: product.modal_count_days || 3,
-        hours: product.modal_count_hours || 0,
-        minutes: product.modal_count_minutes || 0,
-        seconds: product.modal_count_seconds || 48,
-      });
-    }
-  }, [product]);
+    if (!product?.modal_end_time) return;
 
-  // 카운트다운 타이머
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        let { days, hours, minutes, seconds } = prev;
+    const calculateTimeLeft = () => {
+      const endTime = new Date(product.modal_end_time!).getTime();
+      const now = new Date().getTime();
+      const difference = endTime - now;
 
-        if (seconds > 0) {
-          seconds--;
-        } else if (minutes > 0) {
-          minutes--;
-          seconds = 59;
-        } else if (hours > 0) {
-          hours--;
-          minutes = 59;
-          seconds = 59;
-        } else if (days > 0) {
-          days--;
-          hours = 23;
-          minutes = 59;
-          seconds = 59;
-        }
+      if (difference <= 0) {
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+        return;
+      }
 
-        return { days, hours, minutes, seconds };
-      });
-    }, 1000);
+      const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+      setTimeLeft({ days, hours, minutes, seconds });
+    };
+
+    // 즉시 계산
+    calculateTimeLeft();
+
+    // 1초마다 업데이트
+    const timer = setInterval(calculateTimeLeft, 1000);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [product?.modal_end_time]);
 
   const fetchProductData = async () => {
     try {
@@ -173,9 +163,9 @@ export default function ProductDetailPage() {
       <StoreHeader storeName={storeInfo?.store_name || "내 스토어"} />
 
       <main className="flex-1 pb-32">
-        {/* 상세 이미지 중앙 정렬 (780px 기본, 반응형) */}
+        {/* 상세 이미지 중앙 정렬 (780px 기본, 반응형) - 여백 제거 */}
         {product.detailed_description && (
-          <div className="w-full flex justify-center px-4">
+          <div className="w-full flex justify-center">
             <div
               className="w-full max-w-[780px] prose prose-lg prose-headings:font-bold prose-h1:text-3xl prose-h2:text-2xl prose-p:text-gray-700 prose-a:text-blue-600 prose-img:w-full"
               dangerouslySetInnerHTML={{ __html: product.detailed_description }}
@@ -185,7 +175,7 @@ export default function ProductDetailPage() {
 
         {/* 상세 설명이 없는 경우 기본 이미지 표시 */}
         {!product.detailed_description && product.thumbnail && (
-          <div className="w-full flex justify-center px-4">
+          <div className="w-full flex justify-center">
             <img
               src={product.thumbnail}
               alt={product.title}
@@ -195,14 +185,15 @@ export default function ProductDetailPage() {
         )}
       </main>
 
-      {/* 하단 고정 결제 유도 모달 (넓이 30% 축소, 하단 여백 추가) */}
-      <div
-        className="fixed bottom-4 left-0 right-0 p-3 shadow-2xl z-50"
-        style={{
-          backgroundColor: `${product.modal_bg_color || '#1a1a1a'}${Math.round(((product.modal_bg_opacity || 100) / 100) * 255).toString(16).padStart(2, '0')}`
-        }}
-      >
-        <div className="max-w-4xl mx-auto flex items-center justify-between gap-4">
+      {/* 하단 고정 결제 유도 모달 (860px 넓이, 라운드 처리) */}
+      <div className="fixed bottom-4 left-1/2 -translate-x-1/2 w-full max-w-[860px] z-50 px-4">
+        <div
+          className="p-4 shadow-2xl rounded-2xl"
+          style={{
+            backgroundColor: `${product.modal_bg_color || '#1a1a1a'}${Math.round(((product.modal_bg_opacity || 100) / 100) * 255).toString(16).padStart(2, '0')}`
+          }}
+        >
+          <div className="flex items-center justify-between gap-4">
           {/* 왼쪽: 텍스트 + 카운트다운 (불 이모지 제거) */}
           <div className="flex items-center gap-3">
             <div>
@@ -248,6 +239,7 @@ export default function ProductDetailPage() {
           >
             {product.modal_button_text || '0원 무료 신청하기'}
           </button>
+          </div>
         </div>
       </div>
 

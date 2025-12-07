@@ -1,6 +1,6 @@
 from pydantic import BaseModel, EmailStr
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List, Dict, Any
 
 
 # Shared properties
@@ -36,6 +36,9 @@ class InstructorUpdate(BaseModel):
     footer_business_hours: Optional[str] = None
     footer_address: Optional[str] = None
 
+    # Banner slides
+    banner_slides: Optional[List[Dict[str, Any]]] = None
+
     # Kakao Login Settings
     kakao_client_id: Optional[str] = None
     kakao_client_secret: Optional[str] = None
@@ -60,6 +63,9 @@ class InstructorResponse(InstructorBase):
     footer_contact: Optional[str] = None
     footer_business_hours: Optional[str] = None
     footer_address: Optional[str] = None
+
+    # Banner slides
+    banner_slides: Optional[List[Dict[str, Any]]] = None
 
     # Kakao Login Settings (don't expose client_secret!)
     kakao_enabled: Optional[bool] = False

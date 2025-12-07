@@ -90,6 +90,7 @@ export interface Product {
   modal_count_hours?: number;
   modal_count_minutes?: number;
   modal_count_seconds?: number;
+  modal_end_time?: string;  // ISO datetime string
 }
 
 export interface ProductCreateRequest {
@@ -484,6 +485,16 @@ export interface OrderStats {
   };
 }
 
+// Banner slide interface
+export interface BannerSlide {
+  id: string;
+  image_url: string;
+  title?: string;
+  subtitle?: string;
+  link_url?: string;
+  order?: number;
+}
+
 // Store information interface
 export interface StoreInfo {
   store_name: string;
@@ -501,6 +512,9 @@ export interface StoreInfo {
   footer_contact?: string;
   footer_business_hours?: string;
   footer_address?: string;
+
+  // Banner slides
+  banner_slides?: BannerSlide[];
 }
 
 // Public Store API (no authentication required)

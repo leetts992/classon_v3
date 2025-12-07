@@ -39,6 +39,7 @@ class Product(Base):
     modal_count_hours = Column(Integer, default=0)
     modal_count_minutes = Column(Integer, default=0)
     modal_count_seconds = Column(Integer, default=48)
+    modal_end_time = Column(DateTime(timezone=True), nullable=True)  # 카운트다운 종료 시간
 
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
