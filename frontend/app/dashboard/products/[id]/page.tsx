@@ -14,10 +14,6 @@ export default function EditProductPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    fetchProduct();
-  }, [productId]);
-
   const fetchProduct = async () => {
     try {
       setLoading(true);
@@ -32,6 +28,13 @@ export default function EditProductPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (productId) {
+      fetchProduct();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [productId]);
 
   if (loading) {
     return (
