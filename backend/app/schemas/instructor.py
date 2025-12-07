@@ -63,6 +63,8 @@ class InstructorResponse(InstructorBase):
 
     # Kakao Login Settings (don't expose client_secret!)
     kakao_enabled: Optional[bool] = False
+    kakao_client_id: Optional[str] = None
+    kakao_redirect_uri: Optional[str] = None
 
     class Config:
         from_attributes = True
