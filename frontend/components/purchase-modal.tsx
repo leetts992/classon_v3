@@ -78,9 +78,9 @@ export default function PurchaseModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-gray-900 bg-opacity-20">
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-white bg-opacity-30 backdrop-blur-sm">
       {/* Modal Container */}
-      <div className="w-full max-w-md bg-white rounded-t-2xl shadow-xl animate-slide-up">
+      <div className="w-full max-w-md bg-white rounded-t-2xl shadow-xl animate-slide-up max-h-[70vh]">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
           <h2 className="text-lg font-bold text-gray-900">강의 상품</h2>

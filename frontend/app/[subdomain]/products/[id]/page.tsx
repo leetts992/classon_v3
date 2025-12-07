@@ -96,12 +96,41 @@ export default function ProductDetailPage() {
     setIsPurchaseModalOpen(false);
   };
 
-  const scrollToSection = (sectionId: string) => {
+  const scrollToSection = (sectionId: string, tab: 'description' | 'curriculum' | 'schedule') => {
+    setActiveTab(tab);
     const element = document.getElementById(sectionId);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
+
+  // 스크롤 위치에 따라 활성 탭 업데이트
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = [
+        { id: 'description-section', tab: 'description' as const },
+        { id: 'curriculum-section', tab: 'curriculum' as const },
+        { id: 'schedule-section', tab: 'schedule' as const },
+        { id: 'mobile-description', tab: 'description' as const },
+        { id: 'mobile-curriculum', tab: 'curriculum' as const },
+        { id: 'mobile-schedule', tab: 'schedule' as const },
+      ];
+
+      for (const section of sections) {
+        const element = document.getElementById(section.id);
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          if (rect.top >= 0 && rect.top <= 300) {
+            setActiveTab(section.tab);
+            break;
+          }
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const formatPrice = (price: number) => {
     return `${price.toLocaleString()}원`;
@@ -221,24 +250,36 @@ export default function ProductDetailPage() {
                 </div>
               )}
 
-              {/* 탭 메뉴 - 항상 표시 */}
-              <div className="border-b border-gray-200 sticky top-0 bg-white z-10">
+              {/* 탭 메뉴 - 항상 표시, 스크롤 시 상단 고정 */}
+              <div className="border-b border-gray-200 sticky top-0 bg-white z-10 py-2">
                 <div className="flex gap-8">
                   <button
-                    onClick={() => scrollToSection('description-section')}
-                    className="pb-4 px-2 font-medium text-lg transition-colors text-gray-500 hover:text-[#FF8547] border-b-2 border-transparent hover:border-[#FF8547]"
+                    onClick={() => scrollToSection('description-section', 'description')}
+                    className={`pb-4 px-2 font-medium text-lg transition-colors border-b-2 ${
+                      activeTab === 'description'
+                        ? 'text-[#FF8547] border-[#FF8547]'
+                        : 'text-gray-500 hover:text-[#FF8547] border-transparent hover:border-[#FF8547]'
+                    }`}
                   >
                     강의소개
                   </button>
                   <button
-                    onClick={() => scrollToSection('curriculum-section')}
-                    className="pb-4 px-2 font-medium text-lg transition-colors text-gray-500 hover:text-[#FF8547] border-b-2 border-transparent hover:border-[#FF8547]"
+                    onClick={() => scrollToSection('curriculum-section', 'curriculum')}
+                    className={`pb-4 px-2 font-medium text-lg transition-colors border-b-2 ${
+                      activeTab === 'curriculum'
+                        ? 'text-[#FF8547] border-[#FF8547]'
+                        : 'text-gray-500 hover:text-[#FF8547] border-transparent hover:border-[#FF8547]'
+                    }`}
                   >
                     커리큘럼
                   </button>
                   <button
-                    onClick={() => scrollToSection('schedule-section')}
-                    className="pb-4 px-2 font-medium text-lg transition-colors text-gray-500 hover:text-[#FF8547] border-b-2 border-transparent hover:border-[#FF8547]"
+                    onClick={() => scrollToSection('schedule-section', 'schedule')}
+                    className={`pb-4 px-2 font-medium text-lg transition-colors border-b-2 ${
+                      activeTab === 'schedule'
+                        ? 'text-[#FF8547] border-[#FF8547]'
+                        : 'text-gray-500 hover:text-[#FF8547] border-transparent hover:border-[#FF8547]'
+                    }`}
                   >
                     강의일정
                   </button>
@@ -385,24 +426,36 @@ export default function ProductDetailPage() {
             </div>
           </div>
 
-          {/* 모바일: 탭 메뉴 - 항상 표시 */}
-          <div className="lg:hidden border-b border-gray-200 mb-6 sticky top-0 bg-white z-10">
+          {/* 모바일: 탭 메뉴 - 항상 표시, 스크롤 시 상단 고정 */}
+          <div className="lg:hidden border-b border-gray-200 mb-6 sticky top-0 bg-white z-10 py-2">
             <div className="flex gap-4 overflow-x-auto">
               <button
-                onClick={() => scrollToSection('mobile-description')}
-                className="pb-4 px-2 font-medium text-base transition-colors whitespace-nowrap text-gray-500 hover:text-[#FF8547] border-b-2 border-transparent hover:border-[#FF8547]"
+                onClick={() => scrollToSection('mobile-description', 'description')}
+                className={`pb-4 px-2 font-medium text-base transition-colors whitespace-nowrap border-b-2 ${
+                  activeTab === 'description'
+                    ? 'text-[#FF8547] border-[#FF8547]'
+                    : 'text-gray-500 hover:text-[#FF8547] border-transparent hover:border-[#FF8547]'
+                }`}
               >
                 강의소개
               </button>
               <button
-                onClick={() => scrollToSection('mobile-curriculum')}
-                className="pb-4 px-2 font-medium text-base transition-colors whitespace-nowrap text-gray-500 hover:text-[#FF8547] border-b-2 border-transparent hover:border-[#FF8547]"
+                onClick={() => scrollToSection('mobile-curriculum', 'curriculum')}
+                className={`pb-4 px-2 font-medium text-base transition-colors whitespace-nowrap border-b-2 ${
+                  activeTab === 'curriculum'
+                    ? 'text-[#FF8547] border-[#FF8547]'
+                    : 'text-gray-500 hover:text-[#FF8547] border-transparent hover:border-[#FF8547]'
+                }`}
               >
                 커리큘럼
               </button>
               <button
-                onClick={() => scrollToSection('mobile-schedule')}
-                className="pb-4 px-2 font-medium text-base transition-colors whitespace-nowrap text-gray-500 hover:text-[#FF8547] border-b-2 border-transparent hover:border-[#FF8547]"
+                onClick={() => scrollToSection('mobile-schedule', 'schedule')}
+                className={`pb-4 px-2 font-medium text-base transition-colors whitespace-nowrap border-b-2 ${
+                  activeTab === 'schedule'
+                    ? 'text-[#FF8547] border-[#FF8547]'
+                    : 'text-gray-500 hover:text-[#FF8547] border-transparent hover:border-[#FF8547]'
+                }`}
               >
                 강의일정
               </button>
