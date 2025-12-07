@@ -109,7 +109,7 @@ export default function CartPage() {
                 관심있는 강의를 장바구니에 담아보세요
               </p>
               <Button
-                onClick={() => router.push(`/${subdomain}`)}
+                onClick={() => router.push("/")}
                 className="bg-blue-600 hover:bg-blue-700 text-white"
               >
                 강의 둘러보기

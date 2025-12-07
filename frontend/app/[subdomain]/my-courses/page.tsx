@@ -44,7 +44,7 @@ export default function MyCoursesPage() {
       setIsLoggedIn(true);
     } else {
       setIsLoggedIn(false);
-      router.push(`/${subdomain}/login?redirect=/my-courses`);
+      router.push("/login?redirect=/my-courses");
     }
   };
 
@@ -114,7 +114,7 @@ export default function MyCoursesPage() {
                 관심있는 강의를 구매하고 학습을 시작해보세요
               </p>
               <Button
-                onClick={() => router.push(`/${subdomain}`)}
+                onClick={() => router.push("/")}
                 className="bg-blue-600 hover:bg-blue-700 text-white"
               >
                 강의 둘러보기
@@ -128,7 +128,7 @@ export default function MyCoursesPage() {
                   key={course.id}
                   className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
                   onClick={() =>
-                    router.push(`/${subdomain}/my-courses/${course.id}`)
+                    router.push(`/my-courses/${course.id}`)
                   }
                 >
                   {/* Thumbnail */}
@@ -197,7 +197,7 @@ export default function MyCoursesPage() {
                       className="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white"
                       onClick={(e) => {
                         e.stopPropagation();
-                        router.push(`/${subdomain}/my-courses/${course.id}`);
+                        router.push(`/my-courses/${course.id}`);
                       }}
                     >
                       {course.progress && course.progress > 0

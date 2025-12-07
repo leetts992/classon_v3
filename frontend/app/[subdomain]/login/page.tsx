@@ -35,7 +35,7 @@ export default function CustomerLoginPage() {
       localStorage.setItem("customer_subdomain", subdomain);
 
       // Redirect to store home
-      router.push(`/${subdomain}`);
+      router.push("/");
     } catch (err: any) {
       setError(err.message || "로그인에 실패했습니다.");
     } finally {
@@ -106,7 +106,7 @@ export default function CustomerLoginPage() {
           <div className="text-center text-sm">
             <span className="text-gray-600">계정이 없으신가요? </span>
             <Link
-              href={`/${subdomain}/signup`}
+              href="/signup"
               className="text-blue-600 hover:text-blue-700 font-medium"
             >
               회원가입
@@ -115,7 +115,7 @@ export default function CustomerLoginPage() {
 
           <div className="text-center">
             <Link
-              href={`/${subdomain}`}
+              href="/"
               className="text-sm text-gray-600 hover:text-gray-800"
             >
               스토어로 돌아가기
