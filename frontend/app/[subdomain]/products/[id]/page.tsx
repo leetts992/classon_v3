@@ -134,8 +134,26 @@ export default function ProductDetailPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-lg text-gray-600">로딩 중...</p>
+      <div className="flex flex-col min-h-screen">
+        <StoreHeader storeName="" />
+
+        {/* Skeleton for product detail */}
+        <main className="flex-1 py-8">
+          <div className="container max-w-4xl">
+            <div className="bg-white rounded-lg shadow-lg overflow-hidden animate-pulse">
+              <div className="w-full h-96 bg-gray-300" />
+              <div className="p-8 space-y-4">
+                <div className="h-8 bg-gray-300 rounded w-3/4" />
+                <div className="h-6 bg-gray-300 rounded w-1/4" />
+                <div className="h-4 bg-gray-300 rounded w-full" />
+                <div className="h-4 bg-gray-300 rounded w-5/6" />
+                <div className="h-12 bg-gray-300 rounded w-full mt-6" />
+              </div>
+            </div>
+          </div>
+        </main>
+
+        <footer className="bg-gray-100 h-64 animate-pulse" />
       </div>
     );
   }

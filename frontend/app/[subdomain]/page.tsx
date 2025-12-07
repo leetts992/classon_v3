@@ -114,7 +114,7 @@ export default function StorePage() {
   if (loading) {
     return (
       <div className="flex flex-col min-h-screen">
-        <StoreHeader storeName="로딩 중..." />
+        <StoreHeader storeName="" />
 
         {/* Skeleton Banner */}
         <div className="w-full h-[280px] md:h-[350px] lg:h-[420px] bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 animate-pulse" />
