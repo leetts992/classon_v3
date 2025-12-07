@@ -55,17 +55,8 @@ class DynamicCORSMiddleware(BaseHTTPMiddleware):
 
         return response
 
-# Add custom CORS middleware
+# Add custom CORS middleware (handles all CORS including wildcards)
 app.add_middleware(DynamicCORSMiddleware)
-
-# Set up standard CORS for known origins
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=settings.BACKEND_CORS_ORIGINS,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 
 @app.on_event("startup")
