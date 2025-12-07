@@ -320,12 +320,26 @@ export default function KakaoSettingsPage() {
               <div className="flex-1 relative">
                 <Input
                   id="kakaoRedirectUri"
+                  name="kakao-redirect-uri"
                   value={settings.kakaoRedirectUri}
                   onChange={(e) =>
                     setSettings({ ...settings, kakaoRedirectUri: e.target.value })
                   }
-                  placeholder={`https://${settings.subdomain}.class-on.kr/login`}
-                  className="font-mono text-sm pr-10"
+                  placeholder={`예: https://${settings.subdomain}.class-on.kr/login`}
+                  className={`font-mono text-sm pr-10 select-text cursor-text ${
+                    settings.kakaoRedirectUri
+                      ? 'text-foreground font-semibold'
+                      : 'placeholder:text-muted-foreground placeholder:font-normal'
+                  }`}
+                  style={{
+                    userSelect: 'text',
+                    WebkitUserSelect: 'text',
+                    MozUserSelect: 'text',
+                  }}
+                  autoComplete="off"
+                  autoCorrect="off"
+                  autoCapitalize="off"
+                  spellCheck="false"
                 />
                 <Button
                   type="button"
