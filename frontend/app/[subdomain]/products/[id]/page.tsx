@@ -261,34 +261,34 @@ export default function ProductDetailPage() {
               )}
 
               {/* 탭 메뉴 - 항상 표시, 스크롤 시 상단 고정 */}
-              <div className="border-b border-gray-200 sticky top-16 bg-white z-20 py-2 shadow-sm">
-                <div className="flex gap-8">
+              <div className="sticky top-16 bg-white z-20 shadow-sm">
+                <div className="flex gap-8 h-14 items-center justify-center">
                   <button
                     onClick={() => scrollToSection('description-section', 'description')}
-                    className={`pb-4 px-2 font-medium text-lg transition-colors border-b-2 ${
+                    className={`px-2 font-medium text-lg transition-colors ${
                       activeTab === 'description'
-                        ? 'text-[#FF8547] border-[#FF8547]'
-                        : 'text-gray-500 hover:text-[#FF8547] border-transparent hover:border-[#FF8547]'
+                        ? 'text-[#FF8547]'
+                        : 'text-gray-500 hover:text-[#FF8547]'
                     }`}
                   >
                     강의소개
                   </button>
                   <button
                     onClick={() => scrollToSection('curriculum-section', 'curriculum')}
-                    className={`pb-4 px-2 font-medium text-lg transition-colors border-b-2 ${
+                    className={`px-2 font-medium text-lg transition-colors ${
                       activeTab === 'curriculum'
-                        ? 'text-[#FF8547] border-[#FF8547]'
-                        : 'text-gray-500 hover:text-[#FF8547] border-transparent hover:border-[#FF8547]'
+                        ? 'text-[#FF8547]'
+                        : 'text-gray-500 hover:text-[#FF8547]'
                     }`}
                   >
                     커리큘럼
                   </button>
                   <button
                     onClick={() => scrollToSection('schedule-section', 'schedule')}
-                    className={`pb-4 px-2 font-medium text-lg transition-colors border-b-2 ${
+                    className={`px-2 font-medium text-lg transition-colors ${
                       activeTab === 'schedule'
-                        ? 'text-[#FF8547] border-[#FF8547]'
-                        : 'text-gray-500 hover:text-[#FF8547] border-transparent hover:border-[#FF8547]'
+                        ? 'text-[#FF8547]'
+                        : 'text-gray-500 hover:text-[#FF8547]'
                     }`}
                   >
                     강의일정
@@ -438,7 +438,7 @@ export default function ProductDetailPage() {
 
           {/* 모바일: 탭 메뉴 - 항상 표시, 스크롤 시 상단 고정 */}
           <div className="lg:hidden mb-6 sticky top-14 bg-white z-20 shadow-sm">
-            <div className="flex gap-4 overflow-x-auto h-12 items-center">
+            <div className="flex gap-8 h-12 items-center justify-center">
               <button
                 onClick={() => scrollToSection('mobile-description', 'description')}
                 className={`px-2 font-medium text-base transition-colors whitespace-nowrap ${
