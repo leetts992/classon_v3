@@ -22,6 +22,17 @@ class ProductBase(BaseModel):
     file_url: Optional[str] = None
     is_published: bool = False
 
+    # 결제 유도 모달 설정
+    modal_bg_color: Optional[str] = "#1a1a1a"
+    modal_text: Optional[str] = "선착순 마감입니다!"
+    modal_text_color: Optional[str] = "#ffffff"
+    modal_button_text: Optional[str] = "0원 무료 신청하기"
+    modal_button_color: Optional[str] = "#ff0000"
+    modal_count_days: Optional[int] = 3
+    modal_count_hours: Optional[int] = 0
+    modal_count_minutes: Optional[int] = 0
+    modal_count_seconds: Optional[int] = 48
+
 
 class ProductCreate(ProductBase):
     pass
@@ -39,6 +50,17 @@ class ProductUpdate(BaseModel):
     duration: Optional[int] = Field(None, ge=0)
     file_url: Optional[str] = None
     is_published: Optional[bool] = None
+
+    # 결제 유도 모달 설정
+    modal_bg_color: Optional[str] = None
+    modal_text: Optional[str] = None
+    modal_text_color: Optional[str] = None
+    modal_button_text: Optional[str] = None
+    modal_button_color: Optional[str] = None
+    modal_count_days: Optional[int] = None
+    modal_count_hours: Optional[int] = None
+    modal_count_minutes: Optional[int] = None
+    modal_count_seconds: Optional[int] = None
 
 
 class ProductResponse(ProductBase):

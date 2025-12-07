@@ -48,6 +48,17 @@ export function ProductForm({ product }: ProductFormProps) {
   const [fileUrl, setFileUrl] = useState("");
   const [isPublished, setIsPublished] = useState(false);
 
+  // 결제 유도 모달 설정
+  const [modalBgColor, setModalBgColor] = useState("#1a1a1a");
+  const [modalText, setModalText] = useState("선착순 마감입니다!");
+  const [modalTextColor, setModalTextColor] = useState("#ffffff");
+  const [modalButtonText, setModalButtonText] = useState("0원 무료 신청하기");
+  const [modalButtonColor, setModalButtonColor] = useState("#ff0000");
+  const [modalCountDays, setModalCountDays] = useState("3");
+  const [modalCountHours, setModalCountHours] = useState("0");
+  const [modalCountMinutes, setModalCountMinutes] = useState("0");
+  const [modalCountSeconds, setModalCountSeconds] = useState("48");
+
   // Load product data if editing
   useEffect(() => {
     if (product) {
@@ -62,6 +73,17 @@ export function ProductForm({ product }: ProductFormProps) {
       setThumbnail(product.thumbnail || "");
       setFileUrl(product.file_url || "");
       setIsPublished(product.is_published);
+
+      // 모달 설정 로드
+      setModalBgColor(product.modal_bg_color || "#1a1a1a");
+      setModalText(product.modal_text || "선착순 마감입니다!");
+      setModalTextColor(product.modal_text_color || "#ffffff");
+      setModalButtonText(product.modal_button_text || "0원 무료 신청하기");
+      setModalButtonColor(product.modal_button_color || "#ff0000");
+      setModalCountDays(product.modal_count_days?.toString() || "3");
+      setModalCountHours(product.modal_count_hours?.toString() || "0");
+      setModalCountMinutes(product.modal_count_minutes?.toString() || "0");
+      setModalCountSeconds(product.modal_count_seconds?.toString() || "48");
     }
   }, [product]);
 
@@ -122,6 +144,17 @@ export function ProductForm({ product }: ProductFormProps) {
         thumbnail: thumbnail || undefined,
         file_url: fileUrl || undefined,
         is_published: isPublished,
+
+        // 모달 설정
+        modal_bg_color: modalBgColor,
+        modal_text: modalText,
+        modal_text_color: modalTextColor,
+        modal_button_text: modalButtonText,
+        modal_button_color: modalButtonColor,
+        modal_count_days: parseInt(modalCountDays),
+        modal_count_hours: parseInt(modalCountHours),
+        modal_count_minutes: parseInt(modalCountMinutes),
+        modal_count_seconds: parseInt(modalCountSeconds),
       };
 
       if (product) {
@@ -181,6 +214,7 @@ export function ProductForm({ product }: ProductFormProps) {
                   <TabsTrigger value="basic">기본 정보</TabsTrigger>
                   <TabsTrigger value="detail">상세 페이지</TabsTrigger>
                   <TabsTrigger value="files">파일 & 설정</TabsTrigger>
+                  <TabsTrigger value="modal">결제 유도 모달</TabsTrigger>
                 </TabsList>
               </div>
 
@@ -387,6 +421,187 @@ export function ProductForm({ product }: ProductFormProps) {
                   <Label htmlFor="isPublished" className="cursor-pointer font-medium">
                     스토어에 게시하기
                   </Label>
+                </div>
+              </TabsContent>
+
+              {/* Modal Settings Tab */}
+              <TabsContent value="modal" className="p-6 space-y-6">
+                <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg mb-6">
+                  <p className="text-sm text-blue-900">
+                    상품 상세 페이지 하단에 표시되는 결제 유도 모달을 설정합니다.
+                  </p>
+                </div>
+
+                {/* Modal Background Color */}
+                <div className="space-y-2">
+                  <Label htmlFor="modalBgColor">모달 배경색</Label>
+                  <div className="flex gap-3 items-center">
+                    <Input
+                      id="modalBgColor"
+                      type="color"
+                      value={modalBgColor}
+                      onChange={(e) => setModalBgColor(e.target.value)}
+                      className="w-20 h-10 cursor-pointer"
+                    />
+                    <Input
+                      type="text"
+                      value={modalBgColor}
+                      onChange={(e) => setModalBgColor(e.target.value)}
+                      placeholder="#1a1a1a"
+                      className="flex-1 bg-white"
+                    />
+                  </div>
+                </div>
+
+                {/* Modal Text */}
+                <div className="space-y-2">
+                  <Label htmlFor="modalText">모달 텍스트</Label>
+                  <Input
+                    id="modalText"
+                    value={modalText}
+                    onChange={(e) => setModalText(e.target.value)}
+                    placeholder="선착순 마감입니다!"
+                    className="bg-white"
+                  />
+                </div>
+
+                {/* Modal Text Color */}
+                <div className="space-y-2">
+                  <Label htmlFor="modalTextColor">텍스트 색상</Label>
+                  <div className="flex gap-3 items-center">
+                    <Input
+                      id="modalTextColor"
+                      type="color"
+                      value={modalTextColor}
+                      onChange={(e) => setModalTextColor(e.target.value)}
+                      className="w-20 h-10 cursor-pointer"
+                    />
+                    <Input
+                      type="text"
+                      value={modalTextColor}
+                      onChange={(e) => setModalTextColor(e.target.value)}
+                      placeholder="#ffffff"
+                      className="flex-1 bg-white"
+                    />
+                  </div>
+                </div>
+
+                {/* Modal Button Text */}
+                <div className="space-y-2">
+                  <Label htmlFor="modalButtonText">버튼 텍스트</Label>
+                  <Input
+                    id="modalButtonText"
+                    value={modalButtonText}
+                    onChange={(e) => setModalButtonText(e.target.value)}
+                    placeholder="0원 무료 신청하기"
+                    className="bg-white"
+                  />
+                </div>
+
+                {/* Modal Button Color */}
+                <div className="space-y-2">
+                  <Label htmlFor="modalButtonColor">버튼 색상</Label>
+                  <div className="flex gap-3 items-center">
+                    <Input
+                      id="modalButtonColor"
+                      type="color"
+                      value={modalButtonColor}
+                      onChange={(e) => setModalButtonColor(e.target.value)}
+                      className="w-20 h-10 cursor-pointer"
+                    />
+                    <Input
+                      type="text"
+                      value={modalButtonColor}
+                      onChange={(e) => setModalButtonColor(e.target.value)}
+                      placeholder="#ff0000"
+                      className="flex-1 bg-white"
+                    />
+                  </div>
+                </div>
+
+                {/* Countdown Timer */}
+                <div className="space-y-2">
+                  <Label>카운트다운 초기값</Label>
+                  <div className="grid grid-cols-4 gap-4">
+                    <div className="space-y-1">
+                      <Label htmlFor="modalCountDays" className="text-xs">일</Label>
+                      <Input
+                        id="modalCountDays"
+                        type="number"
+                        min="0"
+                        value={modalCountDays}
+                        onChange={(e) => setModalCountDays(e.target.value)}
+                        className="bg-white"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <Label htmlFor="modalCountHours" className="text-xs">시간</Label>
+                      <Input
+                        id="modalCountHours"
+                        type="number"
+                        min="0"
+                        max="23"
+                        value={modalCountHours}
+                        onChange={(e) => setModalCountHours(e.target.value)}
+                        className="bg-white"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <Label htmlFor="modalCountMinutes" className="text-xs">분</Label>
+                      <Input
+                        id="modalCountMinutes"
+                        type="number"
+                        min="0"
+                        max="59"
+                        value={modalCountMinutes}
+                        onChange={(e) => setModalCountMinutes(e.target.value)}
+                        className="bg-white"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <Label htmlFor="modalCountSeconds" className="text-xs">초</Label>
+                      <Input
+                        id="modalCountSeconds"
+                        type="number"
+                        min="0"
+                        max="59"
+                        value={modalCountSeconds}
+                        onChange={(e) => setModalCountSeconds(e.target.value)}
+                        className="bg-white"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Preview */}
+                <div className="space-y-2">
+                  <Label>미리보기</Label>
+                  <div
+                    className="p-4 rounded-lg shadow-lg"
+                    style={{ backgroundColor: modalBgColor }}
+                  >
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center text-white text-xs">🔥</div>
+                        <div>
+                          <p style={{ color: modalTextColor }} className="font-bold text-sm">{modalText}</p>
+                          <div className="flex items-center gap-2 text-sm">
+                            <span style={{ color: modalTextColor }} className="font-bold">{modalCountDays}일</span>
+                            <span style={{ color: modalTextColor }}>{modalCountHours}시</span>
+                            <span style={{ color: modalTextColor }}>{modalCountMinutes}분</span>
+                            <span style={{ color: modalTextColor }}>{modalCountSeconds}초</span>
+                          </div>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        className="px-6 py-2 font-bold text-white rounded-lg"
+                        style={{ backgroundColor: modalButtonColor }}
+                      >
+                        {modalButtonText}
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </TabsContent>
             </Tabs>

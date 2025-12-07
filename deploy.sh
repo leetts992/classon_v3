@@ -1,5 +1,5 @@
 #!/bin/bash
-
+#cd /Users/lee/Program/1.\ Web/3.classon./deploy.sh
 # EC2 배포 스크립트
 # 사용법: ./deploy.sh [EC2_IP_ADDRESS]
 

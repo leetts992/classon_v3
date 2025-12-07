@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import StoreHeader from "@/components/store/StoreHeader";
 import StoreFooter from "@/components/store/StoreFooter";
 import { publicStoreAPI, Product as APIProduct, StoreInfo } from "@/lib/api";
-import { ShoppingCart, Clock, BookOpen } from "lucide-react";
+import { ShoppingCart, Clock, BookOpen, Flame } from "lucide-react";
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -117,126 +117,128 @@ export default function ProductDetailPage() {
   }
 
   const displayPrice = product.discount_price || product.price;
-  const hasDiscount = product.discount_price && product.discount_price < product.price;
+  const hasDiscount = product.discount_price && product.discount_price < product.discount_price;
+
+  // 카운트다운 타이머 상태 (DB에서 가져온 값 또는 기본값)
+  const [timeLeft, setTimeLeft] = useState({
+    days: product.modal_count_days || 3,
+    hours: product.modal_count_hours || 0,
+    minutes: product.modal_count_minutes || 0,
+    seconds: product.modal_count_seconds || 48,
+  });
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => {
+        let { days, hours, minutes, seconds } = prev;
+
+        if (seconds > 0) {
+          seconds--;
+        } else if (minutes > 0) {
+          minutes--;
+          seconds = 59;
+        } else if (hours > 0) {
+          hours--;
+          minutes = 59;
+          seconds = 59;
+        } else if (days > 0) {
+          days--;
+          hours = 23;
+          minutes = 59;
+          seconds = 59;
+        }
+
+        return { days, hours, minutes, seconds };
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-white">
       <StoreHeader storeName={storeInfo?.store_name || "내 스토어"} />
 
-      <main className="flex-1 bg-gray-50">
-        <div className="container py-12">
-          <div className="grid md:grid-cols-2 gap-12">
-            {/* Left Column - Image */}
-            <div className="space-y-4">
-              <div className="aspect-video bg-gray-200 rounded-lg overflow-hidden">
-                {product.thumbnail ? (
-                  <img
-                    src={product.thumbnail}
-                    alt={product.title}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <BookOpen className="w-24 h-24 text-gray-400" />
-                  </div>
-                )}
-              </div>
+      <main className="flex-1">
+        {/* 상세 이미지만 표시 */}
+        {product.detailed_description && (
+          <div className="w-full">
+            <div
+              className="prose prose-lg max-w-none prose-headings:font-bold prose-h1:text-3xl prose-h2:text-2xl prose-p:text-gray-700 prose-a:text-blue-600 prose-img:w-full prose-img:max-w-none"
+              dangerouslySetInnerHTML={{ __html: product.detailed_description }}
+            />
+          </div>
+        )}
 
-              {/* Product Meta */}
-              <div className="bg-white p-6 rounded-lg shadow-sm">
-                <h3 className="font-semibold mb-3">상품 정보</h3>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">유형</span>
-                    <span className="font-medium">
-                      {product.type === 'video' ? '동영상 강의' : '전자책'}
-                    </span>
-                  </div>
-                  {product.category && (
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">카테고리</span>
-                      <span className="font-medium">{product.category}</span>
-                    </div>
-                  )}
-                  {product.duration && (
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">재생 시간</span>
-                      <span className="font-medium flex items-center gap-1">
-                        <Clock className="w-4 h-4" />
-                        {formatDuration(product.duration)}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
+        {/* 상세 설명이 없는 경우 기본 이미지 표시 */}
+        {!product.detailed_description && product.thumbnail && (
+          <div className="w-full">
+            <img
+              src={product.thumbnail}
+              alt={product.title}
+              className="w-full"
+            />
+          </div>
+        )}
+      </main>
 
-            {/* Right Column - Details */}
-            <div className="space-y-6">
-              {/* Title and Price */}
-              <div>
-                <h1 className="text-4xl font-bold mb-4">{product.title}</h1>
-                {product.description && (
-                  <p className="text-xl text-gray-600 mb-6">{product.description}</p>
-                )}
-
-                <div className="flex items-baseline gap-3 mb-6">
-                  <span className="text-4xl font-bold text-blue-600">
-                    {formatPrice(displayPrice)}
-                  </span>
-                  {hasDiscount && (
-                    <>
-                      <span className="text-2xl text-gray-400 line-through">
-                        {formatPrice(product.price)}
-                      </span>
-                      <span className="px-2 py-1 bg-red-500 text-white text-sm font-bold rounded">
-                        {Math.round(((product.price - product.discount_price!) / product.price) * 100)}% OFF
-                      </span>
-                    </>
-                  )}
-                </div>
-
-                {/* CTA Buttons */}
-                <div className="flex gap-3">
-                  <button
-                    onClick={handleBuyNow}
-                    className="flex-1 bg-blue-600 text-white px-6 py-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
-                  >
-                    지금 구매하기
-                  </button>
-                  <button
-                    onClick={handleAddToCart}
-                    className="px-6 py-4 border-2 border-blue-600 text-blue-600 rounded-lg font-semibold hover:bg-blue-50 transition-colors flex items-center gap-2"
-                  >
-                    <ShoppingCart className="w-5 h-5" />
-                    장바구니
-                  </button>
-                </div>
-              </div>
-
-              {/* Instructor Info */}
-              <div className="bg-gray-100 p-6 rounded-lg">
-                <h3 className="font-semibold mb-2">강사 정보</h3>
-                <p className="text-lg font-medium">{storeInfo?.full_name}</p>
-                {storeInfo?.bio && (
-                  <p className="text-sm text-gray-600 mt-1">{storeInfo.bio}</p>
-                )}
+      {/* 하단 고정 결제 유도 모달 */}
+      <div
+        className="fixed bottom-0 left-0 right-0 p-4 shadow-2xl z-50"
+        style={{ backgroundColor: product.modal_bg_color || '#1a1a1a' }}
+      >
+        <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
+          {/* 왼쪽: 아이콘 + 텍스트 + 카운트다운 */}
+          <div className="flex items-center gap-3">
+            <Flame className="w-6 h-6 text-orange-500" />
+            <div>
+              <p
+                className="font-bold text-sm"
+                style={{ color: product.modal_text_color || '#ffffff' }}
+              >
+                {product.modal_text || '선착순 마감입니다!'}
+              </p>
+              <div className="flex items-center gap-2 text-sm">
+                <span
+                  className="font-bold"
+                  style={{ color: product.modal_text_color || '#ffffff' }}
+                >
+                  {timeLeft.days}일
+                </span>
+                <span style={{ color: product.modal_text_color || '#ffffff' }}>
+                  {String(timeLeft.hours).padStart(2, '0')}시
+                </span>
+                <span style={{ color: product.modal_text_color || '#ffffff' }}>
+                  {String(timeLeft.minutes).padStart(2, '0')}분
+                </span>
+                <span style={{ color: product.modal_text_color || '#ffffff' }}>
+                  {String(timeLeft.seconds).padStart(2, '0')}초
+                </span>
               </div>
             </div>
           </div>
 
-          {/* Detailed Description */}
-          {product.detailed_description && (
-            <div className="mt-12 bg-white p-8 rounded-lg shadow-sm">
-              <h2 className="text-2xl font-bold mb-6">상세 설명</h2>
-              <div
-                className="prose prose-lg max-w-none prose-headings:font-bold prose-h1:text-3xl prose-h2:text-2xl prose-p:text-gray-700 prose-a:text-blue-600 prose-img:rounded-lg prose-img:shadow-md"
-                dangerouslySetInnerHTML={{ __html: product.detailed_description }}
-              />
-            </div>
-          )}
+          {/* 오른쪽: 버튼 */}
+          <button
+            onClick={handleBuyNow}
+            className="px-8 py-3 font-bold text-white rounded-lg transition-colors"
+            style={{ backgroundColor: product.modal_button_color || '#ff0000' }}
+            onMouseEnter={(e) => {
+              const color = product.modal_button_color || '#ff0000';
+              // 색상을 약간 어둡게
+              e.currentTarget.style.backgroundColor = color + 'cc';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = product.modal_button_color || '#ff0000';
+            }}
+          >
+            {product.modal_button_text || '0원 무료 신청하기'}
+          </button>
         </div>
-      </main>
+      </div>
+
+      {/* 하단 모달을 위한 여백 */}
+      <div className="h-20"></div>
 
       {storeInfo && <StoreFooter storeInfo={storeInfo} />}
     </div>

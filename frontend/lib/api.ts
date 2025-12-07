@@ -78,6 +78,17 @@ export interface Product {
   is_published: boolean;
   created_at: string;
   updated_at?: string;
+
+  // 결제 유도 모달 설정
+  modal_bg_color?: string;
+  modal_text?: string;
+  modal_text_color?: string;
+  modal_button_text?: string;
+  modal_button_color?: string;
+  modal_count_days?: number;
+  modal_count_hours?: number;
+  modal_count_minutes?: number;
+  modal_count_seconds?: number;
 }
 
 export interface ProductCreateRequest {
@@ -92,6 +103,17 @@ export interface ProductCreateRequest {
   duration?: number;
   file_url?: string;
   is_published?: boolean;
+
+  // 결제 유도 모달 설정
+  modal_bg_color?: string;
+  modal_text?: string;
+  modal_text_color?: string;
+  modal_button_text?: string;
+  modal_button_color?: string;
+  modal_count_days?: number;
+  modal_count_hours?: number;
+  modal_count_minutes?: number;
+  modal_count_seconds?: number;
 }
 
 export interface ProductUpdateRequest {
@@ -106,6 +128,17 @@ export interface ProductUpdateRequest {
   duration?: number;
   file_url?: string;
   is_published?: boolean;
+
+  // 결제 유도 모달 설정
+  modal_bg_color?: string;
+  modal_text?: string;
+  modal_text_color?: string;
+  modal_button_text?: string;
+  modal_button_color?: string;
+  modal_count_days?: number;
+  modal_count_hours?: number;
+  modal_count_minutes?: number;
+  modal_count_seconds?: number;
 }
 
 // Get auth token from storage
