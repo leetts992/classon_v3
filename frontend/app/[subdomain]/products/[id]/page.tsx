@@ -172,7 +172,7 @@ export default function ProductDetailPage() {
     <div className="flex flex-col min-h-screen bg-white">
       <StoreHeader storeName={storeInfo?.store_name || "내 스토어"} />
 
-      <main className="flex-1">
+      <main className="flex-1 pb-32">
         {/* 상세 이미지만 표시 */}
         {product.detailed_description && (
           <div className="w-full">
@@ -249,9 +249,6 @@ export default function ProductDetailPage() {
           </button>
         </div>
       </div>
-
-      {/* 하단 모달을 위한 여백 */}
-      <div className="h-20"></div>
 
       {storeInfo && <StoreFooter storeInfo={storeInfo} />}
     </div>
