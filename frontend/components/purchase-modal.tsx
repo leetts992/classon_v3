@@ -78,7 +78,7 @@ export default function PurchaseModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/5 backdrop-blur-[1px]">
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-[1px]">
       {/* Modal Container */}
       <div className="w-full max-w-md bg-white rounded-t-2xl shadow-xl animate-slide-up max-h-[70vh]">
         {/* Header */}
