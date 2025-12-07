@@ -32,6 +32,14 @@ export function middleware(request: NextRequest) {
   // Extract subdomain (e.g., "admin" from "admin.class-on.kr")
   const subdomain = parts[0]
 
+  // If it's dashboard route, don't rewrite - just pass through
+  if (url.pathname.startsWith('/dashboard') ||
+      url.pathname.startsWith('/login') ||
+      url.pathname.startsWith('/signup') ||
+      url.pathname.startsWith('/my-orders')) {
+    return NextResponse.next()
+  }
+
   // Rewrite to the subdomain route
   // e.g., admin.class-on.kr/ -> class-on.kr/admin/
   // e.g., admin.class-on.kr/courses -> class-on.kr/admin/courses
