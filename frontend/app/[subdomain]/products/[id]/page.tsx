@@ -44,6 +44,35 @@ export default function ProductDetailPage() {
     }
   }, [product]);
 
+  // 카운트다운 타이머
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => {
+        let { days, hours, minutes, seconds } = prev;
+
+        if (seconds > 0) {
+          seconds--;
+        } else if (minutes > 0) {
+          minutes--;
+          seconds = 59;
+        } else if (hours > 0) {
+          hours--;
+          minutes = 59;
+          seconds = 59;
+        } else if (days > 0) {
+          days--;
+          hours = 23;
+          minutes = 59;
+          seconds = 59;
+        }
+
+        return { days, hours, minutes, seconds };
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
   const fetchProductData = async () => {
     try {
       setLoading(true);
@@ -137,36 +166,7 @@ export default function ProductDetailPage() {
   }
 
   const displayPrice = product.discount_price || product.price;
-  const hasDiscount = product.discount_price && product.discount_price < product.discount_price;
-
-  // 카운트다운 타이머
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        let { days, hours, minutes, seconds } = prev;
-
-        if (seconds > 0) {
-          seconds--;
-        } else if (minutes > 0) {
-          minutes--;
-          seconds = 59;
-        } else if (hours > 0) {
-          hours--;
-          minutes = 59;
-          seconds = 59;
-        } else if (days > 0) {
-          days--;
-          hours = 23;
-          minutes = 59;
-          seconds = 59;
-        }
-
-        return { days, hours, minutes, seconds };
-      });
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, []);
+  const hasDiscount = product.discount_price && product.discount_price < product.price;
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
