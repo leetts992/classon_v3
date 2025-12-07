@@ -10,8 +10,18 @@ export function middleware(request: NextRequest) {
 
   // If it's the main domain (class-on.kr or www.class-on.kr)
   if (parts.length === 2 || (parts.length === 3 && parts[0] === 'www')) {
-    // Allow main domain to pass through
-    return NextResponse.next()
+    // Only allow root path and specific routes on main domain
+    const allowedPaths = ['/', '/login', '/signup', '/dashboard']
+    const isAllowedPath = allowedPaths.some(path =>
+      url.pathname === path || url.pathname.startsWith(path + '/')
+    )
+
+    if (isAllowedPath) {
+      return NextResponse.next()
+    }
+
+    // Block access to dynamic subdomain routes on main domain (e.g., /admin, /demo)
+    return NextResponse.rewrite(new URL('/404', request.url))
   }
 
   // If it's api subdomain, skip
@@ -19,13 +29,12 @@ export function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // Extract subdomain (e.g., "demo" from "demo.class-on.kr")
+  // Extract subdomain (e.g., "admin" from "admin.class-on.kr")
   const subdomain = parts[0]
 
   // Rewrite to the subdomain route
-  // e.g., demo.class-on.kr/ -> class-on.kr/demo/
-  // e.g., demo.class-on.kr/courses -> class-on.kr/demo/courses
-
+  // e.g., admin.class-on.kr/ -> class-on.kr/admin/
+  // e.g., admin.class-on.kr/courses -> class-on.kr/admin/courses
   url.pathname = `/${subdomain}${url.pathname}`
 
   return NextResponse.rewrite(url)
