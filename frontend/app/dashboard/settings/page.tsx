@@ -623,6 +623,9 @@ export default function SettingsPage() {
                       <CardContent className="space-y-4">
                         <div className="space-y-2">
                           <Label>배너 이미지 *</Label>
+                          <p className="text-sm font-medium text-[#FF8547]">
+                            💡 최적 이미지 크기: 1200 x 400px (3:1 비율)
+                          </p>
                           <div className="flex gap-2">
                             <Input
                               value={slide.image_url}

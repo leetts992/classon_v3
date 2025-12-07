@@ -471,6 +471,9 @@ export function ProductForm({ product }: ProductFormProps) {
                   <p className="text-sm text-gray-600">
                     상품 상세 페이지 상단에 표시될 큰 배너 이미지입니다.
                   </p>
+                  <p className="text-sm font-medium text-[#FF8547]">
+                    💡 최적 이미지 크기: 1200 x 400px (3:1 비율)
+                  </p>
                   <div className="space-y-3">
                     {bannerImage && (
                       <div className="relative w-full border border-gray-200 rounded-lg overflow-hidden bg-gray-50">

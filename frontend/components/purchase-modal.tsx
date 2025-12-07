@@ -80,7 +80,7 @@ export default function PurchaseModal({
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-[1px]">
       {/* Modal Container */}
-      <div className="w-full bg-white rounded-t-2xl shadow-xl animate-slide-up max-h-[70vh]">
+      <div className="w-full bg-white rounded-t-2xl shadow-xl animate-slide-up max-h-[49vh]">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
           <h2 className="text-lg font-bold text-gray-900">강의 상품</h2>
@@ -93,7 +93,7 @@ export default function PurchaseModal({
         </div>
 
         {/* Content */}
-        <div className="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
+        <div className="p-6 space-y-6 max-h-[49vh] overflow-y-auto">
           {/* Product Title */}
           <div>
             <h3 className="text-base font-bold text-gray-900">{productTitle}</h3>
