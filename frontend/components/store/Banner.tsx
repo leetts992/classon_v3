@@ -64,7 +64,7 @@ export default function Banner({
   };
 
   return (
-    <section className="relative w-full h-[400px] md:h-[500px] lg:h-[600px] overflow-hidden bg-black">
+    <section className="relative w-full h-[280px] md:h-[350px] lg:h-[420px] overflow-hidden bg-black">
       {/* 슬라이드 컨테이너 */}
       <div className="relative w-full h-full">
         {bannerSlides.map((slide, index) => (

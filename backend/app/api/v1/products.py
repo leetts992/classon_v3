@@ -201,6 +201,8 @@ async def get_public_store_info(
         "footer_contact": instructor.footer_contact,
         "footer_business_hours": instructor.footer_business_hours,
         "footer_address": instructor.footer_address,
+        # Banner slides
+        "banner_slides": instructor.banner_slides or [],
     }
 
 
