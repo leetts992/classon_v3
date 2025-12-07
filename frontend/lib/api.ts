@@ -686,8 +686,13 @@ export const customerAuthAPI = {
 // Kakao Auth API (for customer Kakao login on subdomain sites)
 export const kakaoAuthAPI = {
   // Initiate Kakao login - returns authorization URL
-  initiateLogin: async (subdomain: string): Promise<{ authorization_url: string; state: string }> => {
-    const response = await fetch(`${API_BASE_URL}/auth/kakao/login/${subdomain}`);
+  initiateLogin: async (subdomain: string, redirectUri?: string): Promise<{ authorization_url: string; state: string }> => {
+    let url = `${API_BASE_URL}/auth/kakao/login/${subdomain}`;
+    if (redirectUri) {
+      url += `?redirect_uri=${encodeURIComponent(redirectUri)}`;
+    }
+
+    const response = await fetch(url);
 
     if (!response.ok) {
       const error: APIError = await response.json();
@@ -701,11 +706,15 @@ export const kakaoAuthAPI = {
   handleCallback: async (
     code: string,
     state: string,
-    subdomain: string
+    subdomain: string,
+    redirectUri?: string
   ): Promise<{ access_token: string; token_type: string; customer: Customer }> => {
-    const response = await fetch(
-      `${API_BASE_URL}/auth/kakao/callback?code=${encodeURIComponent(code)}&state=${encodeURIComponent(state)}&subdomain=${encodeURIComponent(subdomain)}`
-    );
+    let url = `${API_BASE_URL}/auth/kakao/callback?code=${encodeURIComponent(code)}&state=${encodeURIComponent(state)}&subdomain=${encodeURIComponent(subdomain)}`;
+    if (redirectUri) {
+      url += `&redirect_uri=${encodeURIComponent(redirectUri)}`;
+    }
+
+    const response = await fetch(url);
 
     if (!response.ok) {
       const error: APIError = await response.json();

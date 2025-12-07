@@ -48,7 +48,10 @@ export default function CustomerLoginPage() {
         setError("");
 
         try {
-          const response = await kakaoAuthAPI.handleCallback(code, state, subdomain);
+          // Get current redirect URI dynamically
+          const redirectUri = `${window.location.origin}/login`;
+
+          const response = await kakaoAuthAPI.handleCallback(code, state, subdomain, redirectUri);
 
           // Store customer token
           localStorage.setItem("customer_token", response.access_token);
@@ -70,7 +73,10 @@ export default function CustomerLoginPage() {
   const handleKakaoLogin = async () => {
     setError("");
     try {
-      const { authorization_url, state } = await kakaoAuthAPI.initiateLogin(subdomain);
+      // Get current redirect URI dynamically from browser
+      const redirectUri = `${window.location.origin}/login`;
+
+      const { authorization_url, state } = await kakaoAuthAPI.initiateLogin(subdomain, redirectUri);
 
       // Save state to verify later
       sessionStorage.setItem("kakao_state", state);
