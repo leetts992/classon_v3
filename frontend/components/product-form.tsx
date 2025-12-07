@@ -15,8 +15,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Product, ProductType, productsAPI, uploadAPI } from "@/lib/api";
-import { Loader2, X, ArrowLeft } from "lucide-react";
+import { Loader2, X, ArrowLeft, Smile } from "lucide-react";
 import dynamic from "next/dynamic";
+import EmojiPicker from "@/components/emoji-picker";
 
 const RichTextEditor = dynamic(() => import("@/components/rich-text-editor"), {
   ssr: false,
@@ -50,7 +51,8 @@ export function ProductForm({ product }: ProductFormProps) {
 
   // 결제 유도 모달 설정
   const [modalBgColor, setModalBgColor] = useState("#1a1a1a");
-  const [modalText, setModalText] = useState("선착순 마감입니다!");
+  const [modalBgOpacity, setModalBgOpacity] = useState("100");
+  const [modalText, setModalText] = useState("🔥 선착순 마감입니다!");
   const [modalTextColor, setModalTextColor] = useState("#ffffff");
   const [modalButtonText, setModalButtonText] = useState("0원 무료 신청하기");
   const [modalButtonColor, setModalButtonColor] = useState("#ff0000");
@@ -58,6 +60,7 @@ export function ProductForm({ product }: ProductFormProps) {
   const [modalCountHours, setModalCountHours] = useState("0");
   const [modalCountMinutes, setModalCountMinutes] = useState("0");
   const [modalCountSeconds, setModalCountSeconds] = useState("48");
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
   // Load product data if editing
   useEffect(() => {
@@ -76,7 +79,8 @@ export function ProductForm({ product }: ProductFormProps) {
 
       // 모달 설정 로드
       setModalBgColor(product.modal_bg_color || "#1a1a1a");
-      setModalText(product.modal_text || "선착순 마감입니다!");
+      setModalBgOpacity(product.modal_bg_opacity?.toString() || "100");
+      setModalText(product.modal_text || "🔥 선착순 마감입니다!");
       setModalTextColor(product.modal_text_color || "#ffffff");
       setModalButtonText(product.modal_button_text || "0원 무료 신청하기");
       setModalButtonColor(product.modal_button_color || "#ff0000");
@@ -147,6 +151,7 @@ export function ProductForm({ product }: ProductFormProps) {
 
         // 모달 설정
         modal_bg_color: modalBgColor,
+        modal_bg_opacity: parseInt(modalBgOpacity),
         modal_text: modalText,
         modal_text_color: modalTextColor,
         modal_button_text: modalButtonText,
@@ -453,16 +458,41 @@ export function ProductForm({ product }: ProductFormProps) {
                   </div>
                 </div>
 
+                {/* Modal Background Opacity */}
+                <div className="space-y-2">
+                  <Label htmlFor="modalBgOpacity">배경 투명도 ({modalBgOpacity}%)</Label>
+                  <Input
+                    id="modalBgOpacity"
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={modalBgOpacity}
+                    onChange={(e) => setModalBgOpacity(e.target.value)}
+                    className="w-full cursor-pointer"
+                  />
+                </div>
+
                 {/* Modal Text */}
                 <div className="space-y-2">
                   <Label htmlFor="modalText">모달 텍스트</Label>
-                  <Input
-                    id="modalText"
-                    value={modalText}
-                    onChange={(e) => setModalText(e.target.value)}
-                    placeholder="선착순 마감입니다!"
-                    className="bg-white"
-                  />
+                  <div className="flex gap-2">
+                    <Input
+                      id="modalText"
+                      value={modalText}
+                      onChange={(e) => setModalText(e.target.value)}
+                      placeholder="🔥 선착순 마감입니다!"
+                      className="flex-1 bg-white"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      onClick={() => setShowEmojiPicker(true)}
+                      className="shrink-0"
+                    >
+                      <Smile className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </div>
 
                 {/* Modal Text Color */}
@@ -578,11 +608,12 @@ export function ProductForm({ product }: ProductFormProps) {
                   <Label>미리보기</Label>
                   <div
                     className="p-4 rounded-lg shadow-lg"
-                    style={{ backgroundColor: modalBgColor }}
+                    style={{
+                      backgroundColor: `${modalBgColor}${Math.round((parseInt(modalBgOpacity) / 100) * 255).toString(16).padStart(2, '0')}`
+                    }}
                   >
                     <div className="flex items-center justify-between gap-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center text-white text-xs">🔥</div>
                         <div>
                           <p style={{ color: modalTextColor }} className="font-bold text-sm">{modalText}</p>
                           <div className="flex items-center gap-2 text-sm">
@@ -606,6 +637,13 @@ export function ProductForm({ product }: ProductFormProps) {
               </TabsContent>
             </Tabs>
           </div>
+
+          {/* Emoji Picker */}
+          <EmojiPicker
+            open={showEmojiPicker}
+            onClose={() => setShowEmojiPicker(false)}
+            onSelect={(emoji) => setModalText(modalText + emoji)}
+          />
 
           {/* Footer */}
           <div className="flex justify-end gap-3 bg-white p-6 rounded-lg shadow-sm border border-gray-200">

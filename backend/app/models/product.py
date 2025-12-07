@@ -30,7 +30,8 @@ class Product(Base):
 
     # 결제 유도 모달 설정
     modal_bg_color = Column(String, default="#1a1a1a")
-    modal_text = Column(String, default="선착순 마감입니다!")
+    modal_bg_opacity = Column(Integer, default=100)  # 0-100 (percentage)
+    modal_text = Column(String, default="🔥 선착순 마감입니다!")
     modal_text_color = Column(String, default="#ffffff")
     modal_button_text = Column(String, default="0원 무료 신청하기")
     modal_button_color = Column(String, default="#ff0000")

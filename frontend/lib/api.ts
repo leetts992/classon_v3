@@ -81,6 +81,7 @@ export interface Product {
 
   // 결제 유도 모달 설정
   modal_bg_color?: string;
+  modal_bg_opacity?: number;
   modal_text?: string;
   modal_text_color?: string;
   modal_button_text?: string;
@@ -106,6 +107,7 @@ export interface ProductCreateRequest {
 
   // 결제 유도 모달 설정
   modal_bg_color?: string;
+  modal_bg_opacity?: number;
   modal_text?: string;
   modal_text_color?: string;
   modal_button_text?: string;
@@ -131,6 +133,7 @@ export interface ProductUpdateRequest {
 
   // 결제 유도 모달 설정
   modal_bg_color?: string;
+  modal_bg_opacity?: number;
   modal_text?: string;
   modal_text_color?: string;
   modal_button_text?: string;

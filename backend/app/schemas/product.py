@@ -24,7 +24,8 @@ class ProductBase(BaseModel):
 
     # 결제 유도 모달 설정
     modal_bg_color: Optional[str] = "#1a1a1a"
-    modal_text: Optional[str] = "선착순 마감입니다!"
+    modal_bg_opacity: Optional[int] = Field(100, ge=0, le=100)  # 0-100
+    modal_text: Optional[str] = "🔥 선착순 마감입니다!"
     modal_text_color: Optional[str] = "#ffffff"
     modal_button_text: Optional[str] = "0원 무료 신청하기"
     modal_button_color: Optional[str] = "#ff0000"

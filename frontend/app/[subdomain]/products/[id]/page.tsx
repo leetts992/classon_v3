@@ -173,11 +173,11 @@ export default function ProductDetailPage() {
       <StoreHeader storeName={storeInfo?.store_name || "내 스토어"} />
 
       <main className="flex-1 pb-32">
-        {/* 상세 이미지만 표시 */}
+        {/* 상세 이미지 중앙 정렬 (780px 기본, 반응형) */}
         {product.detailed_description && (
-          <div className="w-full">
+          <div className="w-full flex justify-center px-4">
             <div
-              className="prose prose-lg max-w-none prose-headings:font-bold prose-h1:text-3xl prose-h2:text-2xl prose-p:text-gray-700 prose-a:text-blue-600 prose-img:w-full prose-img:max-w-none"
+              className="w-full max-w-[780px] prose prose-lg prose-headings:font-bold prose-h1:text-3xl prose-h2:text-2xl prose-p:text-gray-700 prose-a:text-blue-600 prose-img:w-full"
               dangerouslySetInnerHTML={{ __html: product.detailed_description }}
             />
           </div>
@@ -185,31 +185,32 @@ export default function ProductDetailPage() {
 
         {/* 상세 설명이 없는 경우 기본 이미지 표시 */}
         {!product.detailed_description && product.thumbnail && (
-          <div className="w-full">
+          <div className="w-full flex justify-center px-4">
             <img
               src={product.thumbnail}
               alt={product.title}
-              className="w-full"
+              className="w-full max-w-[780px]"
             />
           </div>
         )}
       </main>
 
-      {/* 하단 고정 결제 유도 모달 */}
+      {/* 하단 고정 결제 유도 모달 (넓이 30% 축소, 하단 여백 추가) */}
       <div
-        className="fixed bottom-0 left-0 right-0 p-4 shadow-2xl z-50"
-        style={{ backgroundColor: product.modal_bg_color || '#1a1a1a' }}
+        className="fixed bottom-4 left-0 right-0 p-3 shadow-2xl z-50"
+        style={{
+          backgroundColor: `${product.modal_bg_color || '#1a1a1a'}${Math.round(((product.modal_bg_opacity || 100) / 100) * 255).toString(16).padStart(2, '0')}`
+        }}
       >
-        <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
-          {/* 왼쪽: 아이콘 + 텍스트 + 카운트다운 */}
+        <div className="max-w-4xl mx-auto flex items-center justify-between gap-4">
+          {/* 왼쪽: 텍스트 + 카운트다운 (불 이모지 제거) */}
           <div className="flex items-center gap-3">
-            <Flame className="w-6 h-6 text-orange-500" />
             <div>
               <p
                 className="font-bold text-sm"
                 style={{ color: product.modal_text_color || '#ffffff' }}
               >
-                {product.modal_text || '선착순 마감입니다!'}
+                {product.modal_text || '🔥 선착순 마감입니다!'}
               </p>
               <div className="flex items-center gap-2 text-sm">
                 <span
@@ -234,7 +235,7 @@ export default function ProductDetailPage() {
           {/* 오른쪽: 버튼 */}
           <button
             onClick={handleBuyNow}
-            className="px-8 py-3 font-bold text-white rounded-lg transition-colors"
+            className="px-6 py-2 font-bold text-white rounded-lg transition-colors text-sm"
             style={{ backgroundColor: product.modal_button_color || '#ff0000' }}
             onMouseEnter={(e) => {
               const color = product.modal_button_color || '#ff0000';
