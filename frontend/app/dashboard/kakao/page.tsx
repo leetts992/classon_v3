@@ -275,12 +275,17 @@ export default function KakaoSettingsPage() {
             <Label htmlFor="kakaoClientId">REST API 키 (Client ID) *</Label>
             <Input
               id="kakaoClientId"
+              name="kakao-client-id"
               value={settings.kakaoClientId}
               onChange={(e) =>
                 setSettings({ ...settings, kakaoClientId: e.target.value })
               }
               placeholder="예: 1234567890abcdef1234567890abcdef"
               className="font-mono text-sm"
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="off"
+              spellCheck="false"
             />
             <p className="text-sm text-muted-foreground">
               Kakao Developers 콘솔 {'>'} 앱 설정 {'>'} 앱 키에서 확인할 수 있습니다
@@ -291,6 +296,7 @@ export default function KakaoSettingsPage() {
             <Label htmlFor="kakaoClientSecret">Client Secret (선택사항)</Label>
             <Input
               id="kakaoClientSecret"
+              name="kakao-client-secret"
               type="password"
               value={settings.kakaoClientSecret}
               onChange={(e) =>
@@ -298,6 +304,10 @@ export default function KakaoSettingsPage() {
               }
               placeholder={settings.kakaoClientId ? "변경하려면 입력하세요" : "Client Secret을 입력하세요"}
               className="font-mono text-sm"
+              autoComplete="new-password"
+              autoCorrect="off"
+              autoCapitalize="off"
+              spellCheck="false"
             />
             <p className="text-sm text-muted-foreground">
               보안 강화를 위해 Client Secret 사용을 권장합니다. 설정한 경우 반드시 입력해야 합니다.
