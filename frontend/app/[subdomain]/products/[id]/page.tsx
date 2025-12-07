@@ -96,6 +96,13 @@ export default function ProductDetailPage() {
     setIsPurchaseModalOpen(false);
   };
 
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   const formatPrice = (price: number) => {
     return `${price.toLocaleString()}원`;
   };
@@ -205,121 +212,172 @@ export default function ProductDetailPage() {
             <div className="lg:col-span-2 space-y-6">
               {/* 배너 이미지 또는 썸네일 */}
               {(product.banner_image || product.thumbnail) && (
-                <div className="w-full rounded-lg overflow-hidden">
+                <div className="w-full rounded-lg overflow-hidden" style={{ height: '360px' }}>
                   <img
                     src={product.banner_image || product.thumbnail}
                     alt={product.title}
-                    className="w-full h-auto"
+                    className="w-full h-full object-cover"
                   />
                 </div>
               )}
 
-              {/* 탭 메뉴 */}
-              <div className="border-b border-gray-200">
+              {/* 탭 메뉴 - 항상 표시 */}
+              <div className="border-b border-gray-200 sticky top-0 bg-white z-10">
                 <div className="flex gap-8">
                   <button
-                    onClick={() => setActiveTab('description')}
-                    className={`pb-4 px-2 font-medium text-lg transition-colors ${
-                      activeTab === 'description'
-                        ? 'text-[#FF8547] border-b-2 border-[#FF8547]'
-                        : 'text-gray-500 hover:text-gray-700'
-                    }`}
+                    onClick={() => scrollToSection('description-section')}
+                    className="pb-4 px-2 font-medium text-lg transition-colors text-gray-500 hover:text-[#FF8547] border-b-2 border-transparent hover:border-[#FF8547]"
                   >
                     강의소개
                   </button>
-                  {product.curriculum && (
-                    <button
-                      onClick={() => setActiveTab('curriculum')}
-                      className={`pb-4 px-2 font-medium text-lg transition-colors ${
-                        activeTab === 'curriculum'
-                          ? 'text-[#FF8547] border-b-2 border-[#FF8547]'
-                          : 'text-gray-500 hover:text-gray-700'
-                      }`}
-                    >
-                      커리큘럼
-                    </button>
-                  )}
-                  {product.schedule_info && (
-                    <button
-                      onClick={() => setActiveTab('schedule')}
-                      className={`pb-4 px-2 font-medium text-lg transition-colors ${
-                        activeTab === 'schedule'
-                          ? 'text-[#FF8547] border-b-2 border-[#FF8547]'
-                          : 'text-gray-500 hover:text-gray-700'
-                      }`}
-                    >
-                      강의일정
-                    </button>
-                  )}
+                  <button
+                    onClick={() => scrollToSection('curriculum-section')}
+                    className="pb-4 px-2 font-medium text-lg transition-colors text-gray-500 hover:text-[#FF8547] border-b-2 border-transparent hover:border-[#FF8547]"
+                  >
+                    커리큘럼
+                  </button>
+                  <button
+                    onClick={() => scrollToSection('schedule-section')}
+                    className="pb-4 px-2 font-medium text-lg transition-colors text-gray-500 hover:text-[#FF8547] border-b-2 border-transparent hover:border-[#FF8547]"
+                  >
+                    강의일정
+                  </button>
                 </div>
               </div>
 
-              {/* 탭 컨텐츠 */}
-              <div className="prose prose-lg max-w-none">
-                {activeTab === 'description' && (
-                  <div>
-                    <h2 className="text-2xl font-bold mb-4">강의 안내</h2>
-                    {product.detailed_description ? (
-                      <div dangerouslySetInnerHTML={{ __html: product.detailed_description }} />
-                    ) : (
-                      <p className="text-gray-600">{product.description || '상세 설명이 없습니다.'}</p>
-                    )}
-                  </div>
+              {/* 강의소개 섹션 */}
+              <div id="description-section" className="prose prose-lg max-w-none scroll-mt-20">
+                <h2 className="text-2xl font-bold mb-4">강의소개</h2>
+                {product.detailed_description ? (
+                  <div dangerouslySetInnerHTML={{ __html: product.detailed_description }} />
+                ) : (
+                  <p className="text-gray-600">{product.description || '상세 설명이 없습니다.'}</p>
                 )}
-                {activeTab === 'curriculum' && product.curriculum && (
+              </div>
+
+              {/* 커리큘럼 섹션 */}
+              <div id="curriculum-section" className="prose prose-lg max-w-none scroll-mt-20">
+                <h2 className="text-2xl font-bold mb-4">커리큘럼</h2>
+                {product.curriculum ? (
                   <div dangerouslySetInnerHTML={{ __html: product.curriculum }} />
+                ) : (
+                  <p className="text-gray-600">커리큘럼 정보가 없습니다.</p>
                 )}
-                {activeTab === 'schedule' && product.schedule_info && (
+              </div>
+
+              {/* 강의일정 섹션 */}
+              <div id="schedule-section" className="prose prose-lg max-w-none scroll-mt-20">
+                <h2 className="text-2xl font-bold mb-4">강의일정</h2>
+                {product.schedule_info ? (
                   <div dangerouslySetInnerHTML={{ __html: product.schedule_info }} />
+                ) : (
+                  <p className="text-gray-600">강의일정 정보가 없습니다.</p>
                 )}
               </div>
             </div>
 
-            {/* 오른쪽: 구매 정보 카드 (데스크톱만 표시) */}
+            {/* 오른쪽: 구매 정보 카드 (모바일 모달과 동일) */}
             <div className="lg:col-span-1">
-              <div className="sticky top-24 bg-white border border-gray-200 rounded-lg p-6 shadow-lg space-y-6">
-                {/* NEW 뱃지 */}
-                {product.is_new && (
-                  <div className="inline-block bg-[#FF8547] text-white text-xs font-bold px-3 py-1 rounded">
-                    NEW
-                  </div>
-                )}
+              <div className="sticky top-24 bg-white border border-gray-200 rounded-lg p-6 shadow-lg space-y-4">
+                <h2 className="text-lg font-bold text-gray-900">강의 상품</h2>
 
                 {/* 상품명 */}
-                <h1 className="text-2xl font-bold text-gray-900 leading-tight">
-                  {product.title}
-                </h1>
+                <h3 className="text-base font-bold text-gray-900">{product.title}</h3>
 
                 {/* 가격 정보 */}
                 <div className="space-y-1">
                   {hasDiscount && (
                     <>
                       <div className="flex items-center gap-2">
-                        <span className="text-gray-400 line-through text-lg">
+                        <span className="text-gray-400 line-through text-sm">
                           {formatPrice(product.price)}
                         </span>
                       </div>
                       <div className="flex items-baseline gap-2">
-                        <span className="text-[#FF8547] font-bold text-4xl">
+                        <span className="text-[#FF8547] font-bold text-2xl">
                           {calculateDiscountRate(product.price, product.discount_price!)}%
                         </span>
-                        <span className="text-3xl font-bold text-[#FF8547]">
+                        <span className="text-xl font-bold text-[#FF8547]">
                           {formatPrice(product.discount_price!)}
                         </span>
                       </div>
                     </>
                   )}
                   {!hasDiscount && (
-                    <div className="text-3xl font-bold text-gray-900">
+                    <div className="text-xl font-bold text-gray-900">
                       {formatPrice(product.price)}
                     </div>
                   )}
                 </div>
 
-                {/* 구매 버튼 */}
+                {/* 강의 상품 선택 */}
+                {product.product_options && product.product_options.length > 0 && (
+                  <div className="space-y-2">
+                    <Label htmlFor="productOption-desktop" className="text-sm font-medium text-gray-700">
+                      강의 상품
+                    </Label>
+                    <div className="relative">
+                      <select
+                        id="productOption-desktop"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-[#FF8547] focus:border-transparent text-sm"
+                      >
+                        <option value="">선택해주세요</option>
+                        {product.product_options.map((opt, idx) => (
+                          <option key={idx} value={opt.name}>
+                            {opt.name}
+                            {opt.description && ` (${opt.description})`}
+                            {opt.price !== undefined && ` - ${formatPrice(opt.price)}`}
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+                    </div>
+                  </div>
+                )}
+
+                {/* 추가 옵션 선택 */}
+                {product.additional_options && product.additional_options.length > 0 && (
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium text-gray-700">
+                      옵션 (선택)
+                    </Label>
+                    <div className="space-y-2">
+                      {product.additional_options.map((opt, idx) => (
+                        <div key={idx} className="flex items-start space-x-2 p-2 border border-gray-200 rounded-lg hover:border-[#FF8547] transition-colors">
+                          <input
+                            type="checkbox"
+                            id={`addon-desktop-${idx}`}
+                            className="mt-0.5 w-4 h-4 text-[#FF8547] border-gray-300 rounded focus:ring-[#FF8547]"
+                          />
+                          <label htmlFor={`addon-desktop-${idx}`} className="flex-1 cursor-pointer text-sm">
+                            <div className="flex items-center justify-between">
+                              <span className="font-medium text-gray-900">{opt.name}</span>
+                              <span className="font-bold text-gray-900">+{formatPrice(opt.price)}</span>
+                            </div>
+                            {opt.description && (
+                              <span className="text-xs text-gray-500">{opt.description}</span>
+                            )}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* 총 결제 금액 */}
+                <div className="pt-4 border-t border-gray-200">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-base font-bold text-gray-900">총 결제 금액</span>
+                    <span className="text-xl font-bold text-[#FF8547]">
+                      {formatPrice(displayPrice)}
+                    </span>
+                  </div>
+                </div>
+
+                {/* 구매 버튼 - 높이 40% 줄임 */}
                 <button
                   onClick={handleBuyNow}
-                  className="w-full bg-[#FF8547] hover:bg-[#FF7035] text-white font-bold py-4 px-6 rounded-lg transition-colors text-lg"
+                  className="w-full bg-[#FF8547] hover:bg-[#FF7035] text-white font-bold py-2.5 px-6 rounded-lg transition-colors text-base"
                 >
                   강의 구매하기
                 </button>
@@ -327,73 +385,70 @@ export default function ProductDetailPage() {
             </div>
           </div>
 
-          {/* 모바일/데스크톱 공통: 탭 메뉴 */}
-          <div className="border-b border-gray-200 mb-6">
-            <div className="flex gap-4 lg:gap-8 overflow-x-auto">
+          {/* 모바일: 탭 메뉴 - 항상 표시 */}
+          <div className="lg:hidden border-b border-gray-200 mb-6 sticky top-0 bg-white z-10">
+            <div className="flex gap-4 overflow-x-auto">
               <button
-                onClick={() => setActiveTab('description')}
-                className={`pb-4 px-2 font-medium text-base lg:text-lg transition-colors whitespace-nowrap ${
-                  activeTab === 'description'
-                    ? 'text-[#FF8547] border-b-2 border-[#FF8547]'
-                    : 'text-gray-500 hover:text-gray-700'
-                }`}
+                onClick={() => scrollToSection('mobile-description')}
+                className="pb-4 px-2 font-medium text-base transition-colors whitespace-nowrap text-gray-500 hover:text-[#FF8547] border-b-2 border-transparent hover:border-[#FF8547]"
               >
                 강의소개
               </button>
-              {product.curriculum && (
-                <button
-                  onClick={() => setActiveTab('curriculum')}
-                  className={`pb-4 px-2 font-medium text-base lg:text-lg transition-colors whitespace-nowrap ${
-                    activeTab === 'curriculum'
-                      ? 'text-[#FF8547] border-b-2 border-[#FF8547]'
-                      : 'text-gray-500 hover:text-gray-700'
-                  }`}
-                >
-                  커리큘럼
-                </button>
-              )}
-              {product.schedule_info && (
-                <button
-                  onClick={() => setActiveTab('schedule')}
-                  className={`pb-4 px-2 font-medium text-base lg:text-lg transition-colors whitespace-nowrap ${
-                    activeTab === 'schedule'
-                      ? 'text-[#FF8547] border-b-2 border-[#FF8547]'
-                      : 'text-gray-500 hover:text-gray-700'
-                  }`}
-                >
-                  강의일정
-                </button>
-              )}
+              <button
+                onClick={() => scrollToSection('mobile-curriculum')}
+                className="pb-4 px-2 font-medium text-base transition-colors whitespace-nowrap text-gray-500 hover:text-[#FF8547] border-b-2 border-transparent hover:border-[#FF8547]"
+              >
+                커리큘럼
+              </button>
+              <button
+                onClick={() => scrollToSection('mobile-schedule')}
+                className="pb-4 px-2 font-medium text-base transition-colors whitespace-nowrap text-gray-500 hover:text-[#FF8547] border-b-2 border-transparent hover:border-[#FF8547]"
+              >
+                강의일정
+              </button>
             </div>
           </div>
 
-          {/* 모바일/데스크톱 공통: 탭 컨텐츠 */}
-          <div className="prose prose-lg max-w-none lg:hidden">
-            {activeTab === 'description' && (
-              <div>
-                <h2 className="text-xl font-bold mb-4">강의 안내</h2>
-                {product.detailed_description ? (
-                  <div dangerouslySetInnerHTML={{ __html: product.detailed_description }} />
-                ) : (
-                  <p className="text-gray-600">{product.description || '상세 설명이 없습니다.'}</p>
-                )}
-              </div>
-            )}
-            {activeTab === 'curriculum' && product.curriculum && (
-              <div dangerouslySetInnerHTML={{ __html: product.curriculum }} />
-            )}
-            {activeTab === 'schedule' && product.schedule_info && (
-              <div dangerouslySetInnerHTML={{ __html: product.schedule_info }} />
-            )}
+          {/* 모바일: 컨텐츠 섹션 */}
+          <div className="lg:hidden space-y-8">
+            {/* 강의소개 섹션 */}
+            <div id="mobile-description" className="prose prose-lg max-w-none scroll-mt-20">
+              <h2 className="text-xl font-bold mb-4">강의소개</h2>
+              {product.detailed_description ? (
+                <div dangerouslySetInnerHTML={{ __html: product.detailed_description }} />
+              ) : (
+                <p className="text-gray-600">{product.description || '상세 설명이 없습니다.'}</p>
+              )}
+            </div>
+
+            {/* 커리큘럼 섹션 */}
+            <div id="mobile-curriculum" className="prose prose-lg max-w-none scroll-mt-20">
+              <h2 className="text-xl font-bold mb-4">커리큘럼</h2>
+              {product.curriculum ? (
+                <div dangerouslySetInnerHTML={{ __html: product.curriculum }} />
+              ) : (
+                <p className="text-gray-600">커리큘럼 정보가 없습니다.</p>
+              )}
+            </div>
+
+            {/* 강의일정 섹션 */}
+            <div id="mobile-schedule" className="prose prose-lg max-w-none scroll-mt-20">
+              <h2 className="text-xl font-bold mb-4">강의일정</h2>
+              {product.schedule_info ? (
+                <div dangerouslySetInnerHTML={{ __html: product.schedule_info }} />
+              ) : (
+                <p className="text-gray-600">강의일정 정보가 없습니다.</p>
+              )}
+            </div>
           </div>
         </div>
       </main>
 
-      {/* 모바일: 하단 고정 구매 버튼 */}
+      {/* 모바일: 하단 고정 구매 버튼 - 높이 40% 줄임 */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-lg lg:hidden z-50">
         <button
           onClick={handleBuyNow}
-          className="w-full bg-[#FF8547] hover:bg-[#FF7035] text-white font-bold py-4 px-6 rounded-lg transition-colors text-lg"
+          className="w-full bg-[#FF8547] hover:bg-[#FF7035] text-white font-bold py-2.5 px-6 rounded-lg transition-colors text-base"
         >
           강의 구매하기
         </button>

@@ -78,7 +78,7 @@ export default function PurchaseModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black bg-opacity-50">
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-gray-900 bg-opacity-20">
       {/* Modal Container */}
       <div className="w-full max-w-md bg-white rounded-t-2xl shadow-xl animate-slide-up">
         {/* Header */}
@@ -205,7 +205,7 @@ export default function PurchaseModal({
         <div className="p-4 border-t border-gray-200">
           <button
             onClick={handlePurchase}
-            className="w-full bg-[#FF8547] hover:bg-[#FF7035] text-white font-bold py-4 px-6 rounded-lg transition-colors text-lg"
+            className="w-full bg-[#FF8547] hover:bg-[#FF7035] text-white font-bold py-2.5 px-6 rounded-lg transition-colors text-base"
           >
             강의 구매하기
           </button>
