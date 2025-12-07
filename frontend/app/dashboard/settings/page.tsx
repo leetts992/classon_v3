@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Save, Upload, Eye, Copy, Check, ExternalLink } from "lucide-react";
+import { Save, Upload, Eye, Copy, Check, ExternalLink, Plus, Trash2, GripVertical, Image as ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -13,9 +13,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Separator } from "@/components/ui/separator";
-import { instructorAPI } from "@/lib/api";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { instructorAPI, BannerSlide } from "@/lib/api";
 
 export default function SettingsPage() {
   const [isCopied, setIsCopied] = useState(false);
@@ -28,9 +27,6 @@ export default function SettingsPage() {
     email: "",
     fullName: "",
     profileImage: "",
-    coverImage: "",
-    notificationsEnabled: true,
-    marketingEnabled: false,
 
     // Footer info
     footerCompanyName: "",
@@ -42,6 +38,8 @@ export default function SettingsPage() {
     footerBusinessHours: "",
     footerAddress: "",
   });
+
+  const [bannerSlides, setBannerSlides] = useState<BannerSlide[]>([]);
 
   // Load instructor data on mount
   useEffect(() => {
@@ -56,9 +54,6 @@ export default function SettingsPage() {
           email: instructor.email || "",
           fullName: instructor.full_name || "",
           profileImage: instructor.profile_image || "",
-          coverImage: "",
-          notificationsEnabled: true,
-          marketingEnabled: false,
 
           // Footer info
           footerCompanyName: instructor.footer_company_name || "",
@@ -70,6 +65,9 @@ export default function SettingsPage() {
           footerBusinessHours: instructor.footer_business_hours || "",
           footerAddress: instructor.footer_address || "",
         });
+
+        // Load banner slides
+        setBannerSlides(instructor.banner_slides || []);
       } catch (error) {
         console.error("Failed to fetch instructor data:", error);
         alert("강사 정보를 불러오는데 실패했습니다.");
@@ -126,6 +124,9 @@ export default function SettingsPage() {
         footer_contact: settings.footerContact,
         footer_business_hours: settings.footerBusinessHours,
         footer_address: settings.footerAddress,
+
+        // Banner slides
+        banner_slides: bannerSlides,
       });
       alert("설정이 저장되었습니다!");
     } catch (error: any) {
@@ -134,6 +135,47 @@ export default function SettingsPage() {
     } finally {
       setSaving(false);
     }
+  };
+
+  // Banner management functions
+  const addBannerSlide = () => {
+    const newSlide: BannerSlide = {
+      id: `banner-${Date.now()}`,
+      image_url: "",
+      title: "",
+      subtitle: "",
+      link_url: "",
+      order: bannerSlides.length,
+    };
+    setBannerSlides([...bannerSlides, newSlide]);
+  };
+
+  const removeBannerSlide = (id: string) => {
+    setBannerSlides(bannerSlides.filter((slide) => slide.id !== id));
+  };
+
+  const updateBannerSlide = (id: string, field: keyof BannerSlide, value: string) => {
+    setBannerSlides(
+      bannerSlides.map((slide) =>
+        slide.id === id ? { ...slide, [field]: value } : slide
+      )
+    );
+  };
+
+  const moveBannerSlide = (index: number, direction: "up" | "down") => {
+    const newSlides = [...bannerSlides];
+    const targetIndex = direction === "up" ? index - 1 : index + 1;
+
+    if (targetIndex < 0 || targetIndex >= newSlides.length) return;
+
+    [newSlides[index], newSlides[targetIndex]] = [newSlides[targetIndex], newSlides[index]];
+
+    // Update order
+    newSlides.forEach((slide, idx) => {
+      slide.order = idx;
+    });
+
+    setBannerSlides(newSlides);
   };
 
   if (loading) {
@@ -160,397 +202,449 @@ export default function SettingsPage() {
         </Button>
       </div>
 
-      {/* Subdomain Settings */}
-      <Card>
-        <CardHeader>
-          <CardTitle>서브도메인 설정</CardTitle>
-          <CardDescription>
-            고객들이 접속할 수 있는 스토어 주소를 설정합니다
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Subdomain Input */}
-          <div className="space-y-2">
-            <Label htmlFor="subdomain-input">서브도메인</Label>
-            <div className="flex items-center gap-2">
-              <Input
-                id="subdomain-input"
-                value={settings.subdomain}
-                onChange={(e) => {
-                  const value = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '');
-                  setSettings({
-                    ...settings,
-                    subdomain: value,
-                  });
-                }}
-                placeholder="yourname"
-                pattern="[a-z0-9-]+"
-                className="font-mono"
-              />
-              <span className="text-sm text-muted-foreground whitespace-nowrap">
-                {typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-                  ? `(로컬: /서브도메인)`
-                  : `.class-on.kr`}
-              </span>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              영문 소문자, 숫자, 하이픈(-) 사용 가능
-            </p>
-          </div>
+      {/* Tabs */}
+      <Tabs defaultValue="basic" className="w-full">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="basic">기본정보</TabsTrigger>
+          <TabsTrigger value="footer">상하단</TabsTrigger>
+          <TabsTrigger value="banner">배너관리</TabsTrigger>
+        </TabsList>
 
-          {/* Preview URL */}
-          <div className="space-y-2">
-            <Label>미리보기 URL</Label>
-            <div className="flex gap-2">
-              <div className="flex-1 relative">
-                <Input
-                  value={storeUrl}
-                  readOnly
-                  className="pr-20 font-mono text-sm bg-muted"
-                />
-                <div className="absolute right-2 top-2 flex gap-1">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7"
-                    onClick={handleCopyUrl}
-                  >
-                    {isCopied ? (
-                      <Check className="h-4 w-4 text-green-600" />
-                    ) : (
-                      <Copy className="h-4 w-4" />
-                    )}
+        {/* 기본정보 탭 */}
+        <TabsContent value="basic" className="space-y-6">
+          {/* Subdomain Settings */}
+          <Card>
+            <CardHeader>
+              <CardTitle>서브도메인 설정</CardTitle>
+              <CardDescription>
+                고객들이 접속할 수 있는 스토어 주소를 설정합니다
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* Subdomain Input */}
+              <div className="space-y-2">
+                <Label htmlFor="subdomain-input">서브도메인</Label>
+                <div className="flex items-center gap-2">
+                  <Input
+                    id="subdomain-input"
+                    value={settings.subdomain}
+                    onChange={(e) => {
+                      const value = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '');
+                      setSettings({
+                        ...settings,
+                        subdomain: value,
+                      });
+                    }}
+                    placeholder="yourname"
+                    pattern="[a-z0-9-]+"
+                    className="font-mono"
+                  />
+                  <span className="text-sm text-muted-foreground whitespace-nowrap">
+                    {typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+                      ? `(로컬: /서브도메인)`
+                      : `.class-on.kr`}
+                  </span>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  영문 소문자, 숫자, 하이픈(-) 사용 가능
+                </p>
+              </div>
+
+              {/* Preview URL */}
+              <div className="space-y-2">
+                <Label>미리보기 URL</Label>
+                <div className="flex gap-2">
+                  <div className="flex-1 relative">
+                    <Input
+                      value={storeUrl}
+                      readOnly
+                      className="pr-20 font-mono text-sm bg-muted"
+                    />
+                    <div className="absolute right-2 top-2 flex gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7"
+                        onClick={handleCopyUrl}
+                      >
+                        {isCopied ? (
+                          <Check className="h-4 w-4 text-green-600" />
+                        ) : (
+                          <Copy className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                  <Button variant="outline" className="gap-2" asChild>
+                    <a href={storeUrl} target="_blank" rel="noopener noreferrer">
+                      <ExternalLink className="h-4 w-4" />
+                      미리보기
+                    </a>
                   </Button>
                 </div>
+                <p className="text-sm text-muted-foreground">
+                  {typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+                    ? '개발 환경: 경로 기반 라우팅 (localhost:3000/서브도메인)'
+                    : '배포 환경: 서브도메인 기반 라우팅 (서브도메인.class-on.kr)'}
+                </p>
               </div>
-              <Button variant="outline" className="gap-2" asChild>
-                <a href={storeUrl} target="_blank" rel="noopener noreferrer">
-                  <ExternalLink className="h-4 w-4" />
-                  미리보기
-                </a>
-              </Button>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              {typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-                ? '개발 환경: 경로 기반 라우팅 (localhost:3000/서브도메인)'
-                : '배포 환경: 서브도메인 기반 라우팅 (서브도메인.class-on.kr)'}
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+            </CardContent>
+          </Card>
 
-      {/* Basic Info */}
-      <Card>
-        <CardHeader>
-          <CardTitle>기본 정보</CardTitle>
-          <CardDescription>
-            스토어의 기본 정보를 설정합니다
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="space-y-2">
-            <Label htmlFor="fullName">이름</Label>
-            <Input
-              id="fullName"
-              value={settings.fullName}
-              onChange={(e) =>
-                setSettings({ ...settings, fullName: e.target.value })
-              }
-              placeholder="이름을 입력하세요"
-            />
-            <p className="text-sm text-muted-foreground">
-              강사님의 이름입니다
-            </p>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="storeName">스토어 이름</Label>
-            <Input
-              id="storeName"
-              value={settings.storeName}
-              onChange={(e) =>
-                setSettings({ ...settings, storeName: e.target.value })
-              }
-              placeholder="스토어 이름을 입력하세요"
-            />
-            <p className="text-sm text-muted-foreground">
-              고객에게 표시되는 스토어의 이름입니다
-            </p>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="bio">소개</Label>
-            <Textarea
-              id="bio"
-              value={settings.bio}
-              onChange={(e) => setSettings({ ...settings, bio: e.target.value })}
-              placeholder="자기소개를 입력하세요"
-              rows={4}
-            />
-            <p className="text-sm text-muted-foreground">
-              스토어 메인 페이지에 표시되는 소개글입니다
-            </p>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="email">이메일</Label>
-            <Input
-              id="email"
-              type="email"
-              value={settings.email}
-              onChange={(e) =>
-                setSettings({ ...settings, email: e.target.value })
-              }
-              placeholder="your@email.com"
-            />
-            <p className="text-sm text-muted-foreground">
-              문의 및 알림을 받을 이메일 주소입니다
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Images */}
-      <Card>
-        <CardHeader>
-          <CardTitle>이미지</CardTitle>
-          <CardDescription>
-            프로필 이미지와 커버 이미지를 설정합니다
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="space-y-2">
-            <Label>프로필 이미지</Label>
-            <div className="flex items-center gap-4">
-              <div className="h-20 w-20 rounded-full bg-muted flex items-center justify-center overflow-hidden">
-                {settings.profileImage ? (
-                  <img
-                    src={settings.profileImage}
-                    alt="Profile"
-                    className="h-full w-full object-cover"
+          {/* Basic Info */}
+          <Card>
+            <CardHeader>
+              <CardTitle>기본 정보</CardTitle>
+              <CardDescription>
+                스토어의 기본 정보를 설정합니다
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="fullName">이름</Label>
+                  <Input
+                    id="fullName"
+                    value={settings.fullName}
+                    onChange={(e) =>
+                      setSettings({ ...settings, fullName: e.target.value })
+                    }
+                    placeholder="김철수"
                   />
-                ) : (
-                  <span className="text-2xl font-bold text-muted-foreground">
-                    {settings.storeName.charAt(0)}
-                  </span>
-                )}
-              </div>
-              <Button variant="outline" className="gap-2">
-                <Upload className="h-4 w-4" />
-                업로드
-              </Button>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              권장 크기: 400x400px (JPG, PNG, 최대 2MB)
-            </p>
-          </div>
+                </div>
 
-          <Separator />
-
-          <div className="space-y-2">
-            <Label>커버 이미지</Label>
-            <div className="space-y-4">
-              <div className="h-40 w-full rounded-lg bg-muted flex items-center justify-center overflow-hidden">
-                {settings.coverImage ? (
-                  <img
-                    src={settings.coverImage}
-                    alt="Cover"
-                    className="h-full w-full object-cover"
+                <div className="space-y-2">
+                  <Label htmlFor="storeName">스토어 이름</Label>
+                  <Input
+                    id="storeName"
+                    value={settings.storeName}
+                    onChange={(e) =>
+                      setSettings({ ...settings, storeName: e.target.value })
+                    }
+                    placeholder="철수의 강의"
                   />
-                ) : (
-                  <span className="text-muted-foreground">커버 이미지</span>
-                )}
+                </div>
               </div>
-              <Button variant="outline" className="gap-2">
-                <Upload className="h-4 w-4" />
-                업로드
-              </Button>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              권장 크기: 1920x480px (JPG, PNG, 최대 5MB)
-            </p>
-          </div>
-        </CardContent>
-      </Card>
 
-      {/* Footer Information */}
-      <Card>
-        <CardHeader>
-          <CardTitle>푸터 정보</CardTitle>
-          <CardDescription>
-            스토어 푸터에 표시될 사업자 정보를 설정합니다
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="footerCompanyName">회사명</Label>
-              <Input
-                id="footerCompanyName"
-                value={settings.footerCompanyName}
-                onChange={(e) =>
-                  setSettings({ ...settings, footerCompanyName: e.target.value })
-                }
-                placeholder="(주)래피드글로벌"
-              />
-            </div>
+              <div className="space-y-2">
+                <Label htmlFor="email">이메일</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={settings.email}
+                  onChange={(e) =>
+                    setSettings({ ...settings, email: e.target.value })
+                  }
+                  placeholder="instructor@example.com"
+                />
+              </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="footerCeoName">대표이사</Label>
-              <Input
-                id="footerCeoName"
-                value={settings.footerCeoName}
-                onChange={(e) =>
-                  setSettings({ ...settings, footerCeoName: e.target.value })
-                }
-                placeholder="김수현, 김수준"
-              />
-            </div>
-          </div>
+              <div className="space-y-2">
+                <Label htmlFor="bio">소개</Label>
+                <Textarea
+                  id="bio"
+                  value={settings.bio}
+                  onChange={(e) =>
+                    setSettings({ ...settings, bio: e.target.value })
+                  }
+                  placeholder="스토어 소개를 입력하세요"
+                  rows={4}
+                />
+              </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="footerPrivacyOfficer">개인정보관리책임자</Label>
-              <Input
-                id="footerPrivacyOfficer"
-                value={settings.footerPrivacyOfficer}
-                onChange={(e) =>
-                  setSettings({ ...settings, footerPrivacyOfficer: e.target.value })
-                }
-                placeholder="김수준"
-              />
-            </div>
+              <div className="space-y-2">
+                <Label htmlFor="profileImage">프로필 이미지 URL</Label>
+                <Input
+                  id="profileImage"
+                  value={settings.profileImage}
+                  onChange={(e) =>
+                    setSettings({ ...settings, profileImage: e.target.value })
+                  }
+                  placeholder="https://example.com/profile.jpg"
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-            <div className="space-y-2">
-              <Label htmlFor="footerBusinessNumber">사업자등록번호</Label>
-              <Input
-                id="footerBusinessNumber"
-                value={settings.footerBusinessNumber}
-                onChange={(e) =>
-                  setSettings({ ...settings, footerBusinessNumber: e.target.value })
-                }
-                placeholder="899-88-02750"
-              />
-            </div>
-          </div>
+        {/* 상하단 탭 (푸터 정보) */}
+        <TabsContent value="footer" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>푸터 정보</CardTitle>
+              <CardDescription>
+                스토어 푸터에 표시될 사업자 정보를 설정합니다
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="footerCompanyName">회사명</Label>
+                  <Input
+                    id="footerCompanyName"
+                    value={settings.footerCompanyName}
+                    onChange={(e) =>
+                      setSettings({ ...settings, footerCompanyName: e.target.value })
+                    }
+                    placeholder="(주)래피드글로벌"
+                  />
+                </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="footerSalesNumber">통신판매업신고번호</Label>
-              <Input
-                id="footerSalesNumber"
-                value={settings.footerSalesNumber}
-                onChange={(e) =>
-                  setSettings({ ...settings, footerSalesNumber: e.target.value })
-                }
-                placeholder="2023-서울강남-03841"
-              />
-            </div>
+                <div className="space-y-2">
+                  <Label htmlFor="footerCeoName">대표이사</Label>
+                  <Input
+                    id="footerCeoName"
+                    value={settings.footerCeoName}
+                    onChange={(e) =>
+                      setSettings({ ...settings, footerCeoName: e.target.value })
+                    }
+                    placeholder="김수현, 김수준"
+                  />
+                </div>
+              </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="footerContact">고객센터</Label>
-              <Input
-                id="footerContact"
-                value={settings.footerContact}
-                onChange={(e) =>
-                  setSettings({ ...settings, footerContact: e.target.value })
-                }
-                placeholder="카카오톡 래피드클래스 채널톡"
-              />
-            </div>
-          </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="footerPrivacyOfficer">개인정보관리책임자</Label>
+                  <Input
+                    id="footerPrivacyOfficer"
+                    value={settings.footerPrivacyOfficer}
+                    onChange={(e) =>
+                      setSettings({ ...settings, footerPrivacyOfficer: e.target.value })
+                    }
+                    placeholder="김수준"
+                  />
+                </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="footerBusinessHours">영업시간</Label>
-            <Textarea
-              id="footerBusinessHours"
-              value={settings.footerBusinessHours}
-              onChange={(e) =>
-                setSettings({ ...settings, footerBusinessHours: e.target.value })
-              }
-              placeholder="평일 9:00 ~ 17:00&#10;점심시간 12~13시 / 주말 및 공휴일 휴무"
-              rows={2}
-            />
-          </div>
+                <div className="space-y-2">
+                  <Label htmlFor="footerBusinessNumber">사업자등록번호</Label>
+                  <Input
+                    id="footerBusinessNumber"
+                    value={settings.footerBusinessNumber}
+                    onChange={(e) =>
+                      setSettings({ ...settings, footerBusinessNumber: e.target.value })
+                    }
+                    placeholder="899-88-02750"
+                  />
+                </div>
+              </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="footerAddress">주소</Label>
-            <Textarea
-              id="footerAddress"
-              value={settings.footerAddress}
-              onChange={(e) =>
-                setSettings({ ...settings, footerAddress: e.target.value })
-              }
-              placeholder="본사: 서울특별시 강남구 테헤란로 82길 15, 6층 (대치동, 디아이타워)"
-              rows={2}
-            />
-          </div>
-        </CardContent>
-      </Card>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="footerSalesNumber">통신판매업신고번호</Label>
+                  <Input
+                    id="footerSalesNumber"
+                    value={settings.footerSalesNumber}
+                    onChange={(e) =>
+                      setSettings({ ...settings, footerSalesNumber: e.target.value })
+                    }
+                    placeholder="2023-서울강남-03841"
+                  />
+                </div>
 
-      {/* Notifications */}
-      <Card>
-        <CardHeader>
-          <CardTitle>알림 설정</CardTitle>
-          <CardDescription>이메일 알림 수신 여부를 설정합니다</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label>주문 알림</Label>
-              <p className="text-sm text-muted-foreground">
-                새로운 주문이 발생하면 이메일로 알림을 받습니다
-              </p>
-            </div>
-            <Switch
-              checked={settings.notificationsEnabled}
-              onCheckedChange={(checked) =>
-                setSettings({ ...settings, notificationsEnabled: checked })
-              }
-            />
-          </div>
+                <div className="space-y-2">
+                  <Label htmlFor="footerContact">고객센터</Label>
+                  <Input
+                    id="footerContact"
+                    value={settings.footerContact}
+                    onChange={(e) =>
+                      setSettings({ ...settings, footerContact: e.target.value })
+                    }
+                    placeholder="카카오톡 래피드클래스 채널톡"
+                  />
+                </div>
+              </div>
 
-          <Separator />
+              <div className="space-y-2">
+                <Label htmlFor="footerBusinessHours">영업시간</Label>
+                <Textarea
+                  id="footerBusinessHours"
+                  value={settings.footerBusinessHours}
+                  onChange={(e) =>
+                    setSettings({ ...settings, footerBusinessHours: e.target.value })
+                  }
+                  placeholder="평일 09:00 - 18:00&#10;토·일요일, 공휴일 휴무"
+                  rows={3}
+                />
+              </div>
 
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label>마케팅 알림</Label>
-              <p className="text-sm text-muted-foreground">
-                새로운 기능 및 이벤트 소식을 이메일로 받습니다
-              </p>
-            </div>
-            <Switch
-              checked={settings.marketingEnabled}
-              onCheckedChange={(checked) =>
-                setSettings({ ...settings, marketingEnabled: checked })
-              }
-            />
-          </div>
-        </CardContent>
-      </Card>
+              <div className="space-y-2">
+                <Label htmlFor="footerAddress">주소</Label>
+                <Input
+                  id="footerAddress"
+                  value={settings.footerAddress}
+                  onChange={(e) =>
+                    setSettings({ ...settings, footerAddress: e.target.value })
+                  }
+                  placeholder="서울특별시 강남구 테헤란로 427, 10층 1020호(삼성동, 위워크타워)"
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-      {/* Danger Zone */}
-      <Card className="border-destructive">
-        <CardHeader>
-          <CardTitle className="text-destructive">위험 영역</CardTitle>
-          <CardDescription>
-            신중하게 진행해야 하는 작업들입니다
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="font-medium">스토어 삭제</p>
-              <p className="text-sm text-muted-foreground">
-                스토어와 모든 데이터가 영구적으로 삭제됩니다
-              </p>
-            </div>
-            <Button variant="destructive" disabled>
-              삭제
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+        {/* 배너관리 탭 */}
+        <TabsContent value="banner" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>배너 관리</CardTitle>
+                  <CardDescription>
+                    스토어 메인 페이지에 표시될 배너를 관리합니다
+                  </CardDescription>
+                </div>
+                <Button onClick={addBannerSlide} size="sm" className="gap-2">
+                  <Plus className="h-4 w-4" />
+                  배너 추가
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {bannerSlides.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-12 text-center">
+                  <ImageIcon className="h-12 w-12 text-muted-foreground mb-4" />
+                  <p className="text-lg font-medium text-muted-foreground mb-2">
+                    배너가 없습니다
+                  </p>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    배너를 추가하여 스토어를 더욱 매력적으로 꾸며보세요
+                  </p>
+                  <Button onClick={addBannerSlide} variant="outline" className="gap-2">
+                    <Plus className="h-4 w-4" />
+                    첫 번째 배너 추가
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {bannerSlides.map((slide, index) => (
+                    <Card key={slide.id} className="border-2">
+                      <CardHeader className="pb-3">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <GripVertical className="h-4 w-4 text-muted-foreground" />
+                            <span className="font-semibold">배너 {index + 1}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            {index > 0 && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => moveBannerSlide(index, "up")}
+                              >
+                                ↑
+                              </Button>
+                            )}
+                            {index < bannerSlides.length - 1 && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => moveBannerSlide(index, "down")}
+                              >
+                                ↓
+                              </Button>
+                            )}
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => removeBannerSlide(slide.id)}
+                              className="text-destructive hover:text-destructive"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <div className="space-y-2">
+                          <Label>배너 이미지 URL *</Label>
+                          <Input
+                            value={slide.image_url}
+                            onChange={(e) =>
+                              updateBannerSlide(slide.id, "image_url", e.target.value)
+                            }
+                            placeholder="https://example.com/banner.jpg"
+                          />
+                          <p className="text-sm text-muted-foreground">
+                            권장 크기: 1920x600px (JPG, PNG)
+                          </p>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label>제목 (선택)</Label>
+                            <Input
+                              value={slide.title || ""}
+                              onChange={(e) =>
+                                updateBannerSlide(slide.id, "title", e.target.value)
+                              }
+                              placeholder="무료 쇼핑몰로 4개월만에 매출 1억!"
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label>부제목 (선택)</Label>
+                            <Input
+                              value={slide.subtitle || ""}
+                              onChange={(e) =>
+                                updateBannerSlide(slide.id, "subtitle", e.target.value)
+                              }
+                              placeholder="12/17(수) 오후 7시 30분 무료강의"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>링크 URL (선택)</Label>
+                          <Input
+                            value={slide.link_url || ""}
+                            onChange={(e) =>
+                              updateBannerSlide(slide.id, "link_url", e.target.value)
+                            }
+                            placeholder="#courses 또는 https://example.com"
+                          />
+                          <p className="text-sm text-muted-foreground">
+                            배너 클릭 시 이동할 주소 (비어있으면 클릭 불가)
+                          </p>
+                        </div>
+
+                        {/* 미리보기 */}
+                        {slide.image_url && (
+                          <div className="space-y-2">
+                            <Label>미리보기</Label>
+                            <div className="relative aspect-[16/5] rounded-lg overflow-hidden border">
+                              <img
+                                src={slide.image_url}
+                                alt="배너 미리보기"
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                  e.currentTarget.src = "https://via.placeholder.com/1920x600?text=Image+Not+Found";
+                                }}
+                              />
+                              {(slide.title || slide.subtitle) && (
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent flex items-end p-8">
+                                  <div className="text-white space-y-2">
+                                    {slide.title && (
+                                      <h3 className="text-2xl font-bold">{slide.title}</h3>
+                                    )}
+                                    {slide.subtitle && (
+                                      <p className="text-lg text-white/90">{slide.subtitle}</p>
+                                    )}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
