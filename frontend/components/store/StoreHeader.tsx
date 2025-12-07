@@ -92,20 +92,8 @@ export default function StoreHeader({ storeName }: StoreHeaderProps) {
             </Link>
           </nav>
 
-          {/* Auth & Cart Buttons */}
+          {/* Auth Buttons */}
           <div className="flex items-center gap-3">
-            {/* Cart Icon */}
-            <Link href="/cart">
-              <Button variant="ghost" size="sm" className="gap-2 relative">
-                <ShoppingCart className="w-4 h-4" />
-                {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                    {cartCount}
-                  </span>
-                )}
-              </Button>
-            </Link>
-
             {isLoggedIn ? (
               <>
                 <Link href="/my-courses">
@@ -129,18 +117,11 @@ export default function StoreHeader({ storeName }: StoreHeaderProps) {
                 </Button>
               </>
             ) : (
-              <>
-                <Link href="/login">
-                  <Button variant="ghost" size="sm">
-                    로그인
-                  </Button>
-                </Link>
-                <Link href="/signup">
-                  <Button size="sm">
-                    회원가입
-                  </Button>
-                </Link>
-              </>
+              <Link href="/login">
+                <Button size="sm">
+                  로그인
+                </Button>
+              </Link>
             )}
           </div>
         </div>
