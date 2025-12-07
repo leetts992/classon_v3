@@ -155,7 +155,7 @@ export default function CustomerSignupPage() {
       </div>
 
       {/* 폼 */}
-      <form onSubmit={handleSubmit} className="flex-1 px-4 py-6 space-y-6 max-w-md mx-auto w-full">
+      <form onSubmit={handleSubmit} className="flex-1 px-4 py-4 space-y-4 max-w-sm mx-auto w-full">
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm">
             {error}
