@@ -221,6 +221,9 @@ export function ProductForm({ product }: ProductFormProps) {
     }
   };
 
+  const displayPrice = discountPrice ? parseInt(discountPrice) : (price ? parseInt(price) : 0);
+  const hasDiscount = discountPrice && parseInt(discountPrice) < parseInt(price);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container max-w-5xl py-8">
@@ -243,6 +246,99 @@ export function ProductForm({ product }: ProductFormProps) {
               ? "상품 정보를 수정하세요."
               : "새로운 강의 또는 전자책을 등록하세요."}
           </p>
+        </div>
+
+        {/* Preview Section */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+          <h2 className="text-xl font-bold mb-4">상세페이지 미리보기</h2>
+          <p className="text-sm text-gray-600 mb-4">
+            고객이 보게 될 상세페이지가 어떻게 표시되는지 미리 확인하세요.
+          </p>
+
+          <div className="border border-gray-200 rounded-lg overflow-hidden bg-gray-50">
+            {/* Mobile Preview */}
+            <div className="p-4 space-y-4">
+              {/* Banner Image */}
+              {(bannerImage || thumbnail) && (
+                <div className="w-full rounded-lg overflow-hidden bg-white">
+                  <img
+                    src={bannerImage || thumbnail}
+                    alt="Preview"
+                    className="w-full h-auto"
+                  />
+                </div>
+              )}
+
+              {/* Product Info */}
+              <div className="space-y-3">
+                {isNew && (
+                  <div className="inline-block bg-[#FF8547] text-white text-xs font-bold px-3 py-1 rounded">
+                    NEW
+                  </div>
+                )}
+
+                <h3 className="text-lg font-bold text-gray-900">
+                  {title || "상품명을 입력하세요"}
+                </h3>
+
+                {/* Price */}
+                <div className="space-y-1">
+                  {hasDiscount && (
+                    <>
+                      <div className="flex items-center gap-2">
+                        <span className="text-gray-400 line-through text-sm">
+                          {parseInt(price).toLocaleString()}원
+                        </span>
+                        <span className="text-[#FF8547] font-bold text-base">
+                          {Math.round(((parseInt(price) - parseInt(discountPrice)) / parseInt(price)) * 100)}% 할인
+                        </span>
+                      </div>
+                      <div className="text-xl font-bold text-[#FF8547]">
+                        월 {parseInt(discountPrice).toLocaleString()}원
+                      </div>
+                    </>
+                  )}
+                  {!hasDiscount && price && (
+                    <div className="text-xl font-bold text-gray-900">
+                      {parseInt(price).toLocaleString()}원
+                    </div>
+                  )}
+                </div>
+
+                {/* Product Options */}
+                {productOptions.length > 0 && (
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium">강의 상품</Label>
+                    <select className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white">
+                      <option>선택해주세요</option>
+                      {productOptions.map((opt, idx) => (
+                        <option key={idx}>
+                          {opt.name || "옵션명"}
+                          {opt.description && ` (${opt.description})`}
+                          {opt.price && ` - ${opt.price.toLocaleString()}원`}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                {/* Additional Options */}
+                {additionalOptions.length > 0 && (
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium">옵션 (선택)</Label>
+                    {additionalOptions.map((opt, idx) => (
+                      <div key={idx} className="flex items-center gap-2">
+                        <input type="checkbox" className="w-4 h-4" />
+                        <span className="text-sm">
+                          {opt.name || "옵션명"} (+{(opt.price || 0).toLocaleString()}원)
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Error Message */}
@@ -366,27 +462,10 @@ export function ProductForm({ product }: ProductFormProps) {
                     />
                   </div>
                 )}
-              </TabsContent>
-
-              {/* Detail Page Tab */}
-              <TabsContent value="detail" className="p-6 space-y-6">
-                {/* NEW Badge */}
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    id="isNew"
-                    checked={isNew}
-                    onChange={(e) => setIsNew(e.target.checked)}
-                    className="w-4 h-4 text-[#FF8547] border-gray-300 rounded focus:ring-[#FF8547]"
-                  />
-                  <Label htmlFor="isNew" className="font-normal cursor-pointer">
-                    NEW 뱃지 표시 (상품 카드에 NEW 라벨 표시)
-                  </Label>
-                </div>
 
                 {/* Banner Image Upload */}
                 <div className="space-y-2">
-                  <Label htmlFor="banner">배너 이미지 (상단 큰 이미지)</Label>
+                  <Label htmlFor="banner">배너 이미지 (상세페이지 상단)</Label>
                   <p className="text-sm text-gray-600">
                     상품 상세 페이지 상단에 표시될 큰 배너 이미지입니다.
                   </p>
@@ -422,42 +501,6 @@ export function ProductForm({ product }: ProductFormProps) {
                       </div>
                     )}
                   </div>
-                </div>
-
-                {/* Detailed Description */}
-                <div className="space-y-2">
-                  <Label>강의 소개 (상세 설명)</Label>
-                  <p className="text-sm text-gray-600">
-                    "강의소개" 탭에 표시될 내용입니다. 이미지를 드래그 앤 드롭하거나 툴바의 이미지 버튼을 클릭하여 추가할 수 있습니다.
-                  </p>
-                  <RichTextEditor
-                    value={detailedDescription}
-                    onChange={setDetailedDescription}
-                  />
-                </div>
-
-                {/* Curriculum */}
-                <div className="space-y-2">
-                  <Label>커리큘럼 (선택사항)</Label>
-                  <p className="text-sm text-gray-600">
-                    "커리큘럼" 탭에 표시될 내용입니다. 입력하지 않으면 탭이 표시되지 않습니다.
-                  </p>
-                  <RichTextEditor
-                    value={curriculum}
-                    onChange={setCurriculum}
-                  />
-                </div>
-
-                {/* Schedule Info */}
-                <div className="space-y-2">
-                  <Label>강의 일정 (선택사항)</Label>
-                  <p className="text-sm text-gray-600">
-                    "강의일정" 탭에 표시될 내용입니다. 입력하지 않으면 탭이 표시되지 않습니다.
-                  </p>
-                  <RichTextEditor
-                    value={scheduleInfo}
-                    onChange={setScheduleInfo}
-                  />
                 </div>
 
                 {/* Product Options */}
@@ -589,6 +632,59 @@ export function ProductForm({ product }: ProductFormProps) {
                   >
                     + 추가 옵션 추가
                   </Button>
+                </div>
+              </TabsContent>
+
+              {/* Detail Page Tab */}
+              <TabsContent value="detail" className="p-6 space-y-6">
+                {/* NEW Badge */}
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="isNew"
+                    checked={isNew}
+                    onChange={(e) => setIsNew(e.target.checked)}
+                    className="w-4 h-4 text-[#FF8547] border-gray-300 rounded focus:ring-[#FF8547]"
+                  />
+                  <Label htmlFor="isNew" className="font-normal cursor-pointer">
+                    NEW 뱃지 표시 (상품 카드에 NEW 라벨 표시)
+                  </Label>
+                </div>
+
+                {/* Detailed Description */}
+                <div className="space-y-2">
+                  <Label>강의 소개 (상세 설명)</Label>
+                  <p className="text-sm text-gray-600">
+                    "강의소개" 탭에 표시될 내용입니다. 이미지를 드래그 앤 드롭하거나 툴바의 이미지 버튼을 클릭하여 추가할 수 있습니다.
+                  </p>
+                  <RichTextEditor
+                    value={detailedDescription}
+                    onChange={setDetailedDescription}
+                  />
+                </div>
+
+                {/* Curriculum */}
+                <div className="space-y-2">
+                  <Label>커리큘럼 (선택사항)</Label>
+                  <p className="text-sm text-gray-600">
+                    "커리큘럼" 탭에 표시될 내용입니다. 입력하지 않으면 탭이 표시되지 않습니다.
+                  </p>
+                  <RichTextEditor
+                    value={curriculum}
+                    onChange={setCurriculum}
+                  />
+                </div>
+
+                {/* Schedule Info */}
+                <div className="space-y-2">
+                  <Label>강의 일정 (선택사항)</Label>
+                  <p className="text-sm text-gray-600">
+                    "강의일정" 탭에 표시될 내용입니다. 입력하지 않으면 탭이 표시되지 않습니다.
+                  </p>
+                  <RichTextEditor
+                    value={scheduleInfo}
+                    onChange={setScheduleInfo}
+                  />
                 </div>
               </TabsContent>
 

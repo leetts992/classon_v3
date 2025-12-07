@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import StoreHeader from "@/components/store/StoreHeader";
 import StoreFooter from "@/components/store/StoreFooter";
 import KakaoChannelButton from "@/components/store/KakaoChannelButton";
+import PurchaseModal from "@/components/purchase-modal";
 import { publicStoreAPI, Product as APIProduct, StoreInfo } from "@/lib/api";
 import { Label } from "@/components/ui/label";
 import { ChevronDown } from "lucide-react";
@@ -20,8 +21,7 @@ export default function ProductDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState<'description' | 'curriculum' | 'schedule'>('description');
-  const [selectedOption, setSelectedOption] = useState('');
-  const [selectedAdditionalOptions, setSelectedAdditionalOptions] = useState<string[]>([]);
+  const [isPurchaseModalOpen, setIsPurchaseModalOpen] = useState(false);
 
   // 카운트다운 타이머 상태
   const [timeLeft, setTimeLeft] = useState({
@@ -86,11 +86,14 @@ export default function ProductDetailPage() {
   };
 
   const handleBuyNow = () => {
-    if (!selectedOption && product?.product_options && product.product_options.length > 0) {
-      alert("강의 상품을 선택해주세요!");
-      return;
-    }
+    setIsPurchaseModalOpen(true);
+  };
+
+  const handlePurchase = (selectedOption: string, selectedAdditional: string[]) => {
+    console.log("Selected option:", selectedOption);
+    console.log("Selected additional:", selectedAdditional);
     alert("결제 기능은 곧 추가될 예정입니다!");
+    setIsPurchaseModalOpen(false);
   };
 
   const formatPrice = (price: number) => {
@@ -303,6 +306,7 @@ export default function ProductDetailPage() {
                       <div className="text-3xl font-bold text-[#FF8547]">
                         월 {formatPrice(product.discount_price!)}
                       </div>
+                      <p className="text-sm text-gray-500">최대 12개월 무이자 할부 시</p>
                     </>
                   )}
                   {!hasDiscount && (
@@ -310,90 +314,15 @@ export default function ProductDetailPage() {
                       {formatPrice(product.price)}
                     </div>
                   )}
-                  {hasDiscount && (
-                    <p className="text-sm text-gray-500">최대 12개월 무이자 할부 시</p>
-                  )}
                 </div>
 
-                {/* 강의 상품 선택 */}
-                {product.product_options && product.product_options.length > 0 && (
-                  <div className="space-y-2">
-                    <Label htmlFor="productOption" className="text-sm font-medium text-gray-700">
-                      강의 상품
-                    </Label>
-                    <div className="relative">
-                      <select
-                        id="productOption"
-                        value={selectedOption}
-                        onChange={(e) => setSelectedOption(e.target.value)}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-[#FF8547] focus:border-transparent"
-                      >
-                        <option value="">선택해주세요</option>
-                        {product.product_options.map((opt, idx) => (
-                          <option key={idx} value={opt.name}>
-                            {opt.name}
-                            {opt.description && ` (${opt.description})`}
-                            {opt.price && ` - ${formatPrice(opt.price)}`}
-                          </option>
-                        ))}
-                      </select>
-                      <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
-                    </div>
-                  </div>
-                )}
-
-                {/* 추가 옵션 선택 */}
-                {product.additional_options && product.additional_options.length > 0 && (
-                  <div className="space-y-2">
-                    <Label className="text-sm font-medium text-gray-700">
-                      추가 옵션 (선택)
-                    </Label>
-                    <div className="space-y-2">
-                      {product.additional_options.map((opt, idx) => (
-                        <div key={idx} className="flex items-center space-x-2">
-                          <input
-                            type="checkbox"
-                            id={`addon-${idx}`}
-                            checked={selectedAdditionalOptions.includes(opt.name)}
-                            onChange={(e) => {
-                              if (e.target.checked) {
-                                setSelectedAdditionalOptions([...selectedAdditionalOptions, opt.name]);
-                              } else {
-                                setSelectedAdditionalOptions(selectedAdditionalOptions.filter(n => n !== opt.name));
-                              }
-                            }}
-                            className="w-4 h-4 text-[#FF8547] border-gray-300 rounded focus:ring-[#FF8547]"
-                          />
-                          <label htmlFor={`addon-${idx}`} className="text-sm text-gray-700 cursor-pointer">
-                            {opt.name} (+{formatPrice(opt.price)})
-                            {opt.description && <span className="text-gray-500"> - {opt.description}</span>}
-                          </label>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* 총 결제 금액 */}
-                <div className="pt-4 border-t border-gray-200">
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-lg font-bold text-gray-900">총 결제 금액</span>
-                    <span className="text-2xl font-bold text-[#FF8547]">
-                      월 {formatPrice(displayPrice)}
-                    </span>
-                  </div>
-                  {hasDiscount && (
-                    <p className="text-xs text-gray-500 mb-4">최대 12개월 무이자 할부 시</p>
-                  )}
-
-                  {/* 구매 버튼 */}
-                  <button
-                    onClick={handleBuyNow}
-                    className="w-full bg-[#FF8547] hover:bg-[#FF7035] text-white font-bold py-4 px-6 rounded-lg transition-colors text-lg"
-                  >
-                    강의 구매하기
-                  </button>
-                </div>
+                {/* 구매 버튼 */}
+                <button
+                  onClick={handleBuyNow}
+                  className="w-full bg-[#FF8547] hover:bg-[#FF7035] text-white font-bold py-4 px-6 rounded-lg transition-colors text-lg"
+                >
+                  강의 구매하기
+                </button>
               </div>
             </div>
           </div>
@@ -476,6 +405,17 @@ export default function ProductDetailPage() {
       {storeInfo?.kakao_channel_id && (
         <KakaoChannelButton channelId={storeInfo.kakao_channel_id} />
       )}
+
+      {/* Purchase Modal */}
+      <PurchaseModal
+        isOpen={isPurchaseModalOpen}
+        onClose={() => setIsPurchaseModalOpen(false)}
+        productTitle={product.title}
+        basePrice={displayPrice}
+        productOptions={product.product_options}
+        additionalOptions={product.additional_options}
+        onPurchase={handlePurchase}
+      />
     </div>
   );
 }
