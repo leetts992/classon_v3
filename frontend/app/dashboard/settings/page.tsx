@@ -151,7 +151,19 @@ export default function SettingsPage() {
     setBannerSlides([...bannerSlides, newSlide]);
   };
 
-  const removeBannerSlide = (id: string) => {
+  const removeBannerSlide = async (id: string) => {
+    const slide = bannerSlides.find((s) => s.id === id);
+
+    // S3에 업로드된 이미지라면 삭제
+    if (slide?.image_url && slide.image_url.includes('classon-storage.s3')) {
+      try {
+        await uploadAPI.deleteFile(slide.image_url);
+      } catch (error) {
+        console.error('Failed to delete image from S3:', error);
+        // 이미지 삭제 실패해도 배너는 삭제
+      }
+    }
+
     setBannerSlides(bannerSlides.filter((slide) => slide.id !== id));
   };
 
@@ -182,6 +194,18 @@ export default function SettingsPage() {
   const handleImageUpload = async (bannerId: string, file: File) => {
     try {
       setUploadingBannerId(bannerId);
+
+      // 기존 이미지가 S3에 있다면 삭제
+      const existingSlide = bannerSlides.find((s) => s.id === bannerId);
+      if (existingSlide?.image_url && existingSlide.image_url.includes('classon-storage.s3')) {
+        try {
+          await uploadAPI.deleteFile(existingSlide.image_url);
+        } catch (error) {
+          console.error('Failed to delete old image:', error);
+          // 기존 이미지 삭제 실패해도 새 이미지 업로드는 진행
+        }
+      }
+
       const response = await uploadAPI.uploadImage(file);
       updateBannerSlide(bannerId, "image_url", response.url);
       alert("이미지 업로드 완료!");
