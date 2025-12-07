@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { customerAuthAPI } from "@/lib/api";
+import { customerAuthAPI, publicStoreAPI } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,6 +18,23 @@ export default function CustomerLoginPage() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [storeName, setStoreName] = useState("RapidClass");
+
+  useEffect(() => {
+    // Fetch store info to get store name
+    const fetchStoreInfo = async () => {
+      try {
+        const storeInfo = await publicStoreAPI.getStoreInfo(subdomain);
+        setStoreName(storeInfo.store_name || storeInfo.full_name || "RapidClass");
+      } catch (err) {
+        console.error("Failed to fetch store info:", err);
+      }
+    };
+
+    if (subdomain) {
+      fetchStoreInfo();
+    }
+  }, [subdomain]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,7 +65,7 @@ export default function CustomerLoginPage() {
       <div className="max-w-md w-full space-y-6">
         {/* Logo/Title */}
         <div className="text-center">
-          <h1 className="text-4xl font-bold mb-2">RapidClass</h1>
+          <h1 className="text-4xl font-bold mb-2">{storeName}</h1>
         </div>
 
         <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-200 space-y-6">

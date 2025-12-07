@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { customerAuthAPI } from "@/lib/api";
+import { customerAuthAPI, publicStoreAPI } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,6 +21,23 @@ export default function CustomerSignupPage() {
   const [phone, setPhone] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [storeName, setStoreName] = useState("");
+
+  useEffect(() => {
+    // Fetch store info to get store name
+    const fetchStoreInfo = async () => {
+      try {
+        const storeInfo = await publicStoreAPI.getStoreInfo(subdomain);
+        setStoreName(storeInfo.store_name || storeInfo.full_name || "");
+      } catch (err) {
+        console.error("Failed to fetch store info:", err);
+      }
+    };
+
+    if (subdomain) {
+      fetchStoreInfo();
+    }
+  }, [subdomain]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -72,7 +89,7 @@ export default function CustomerSignupPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-12">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          <h2 className="text-3xl font-bold">회원가입</h2>
+          <h2 className="text-3xl font-bold">{storeName} 회원가입</h2>
           <p className="mt-2 text-gray-600">
             새 계정을 만드세요
           </p>
