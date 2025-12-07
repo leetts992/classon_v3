@@ -80,7 +80,7 @@ export default function PurchaseModal({
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-[1px]">
       {/* Modal Container */}
-      <div className="w-full max-w-md bg-white rounded-t-2xl shadow-xl animate-slide-up max-h-[70vh]">
+      <div className="w-full bg-white rounded-t-2xl shadow-xl animate-slide-up max-h-[70vh]">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
           <h2 className="text-lg font-bold text-gray-900">강의 상품</h2>
