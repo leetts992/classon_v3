@@ -20,6 +20,13 @@ export function middleware(request: NextRequest) {
       return NextResponse.next()
     }
 
+    // Allow Next.js internal requests (RSC, prefetch, etc.)
+    if (url.searchParams.has('_rsc') ||
+        url.searchParams.has('_next') ||
+        url.pathname.startsWith('/_next')) {
+      return NextResponse.next()
+    }
+
     // Block access to dynamic subdomain routes on main domain (e.g., /admin, /demo)
     return NextResponse.rewrite(new URL('/404', request.url))
   }
