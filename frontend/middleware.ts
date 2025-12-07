@@ -11,7 +11,7 @@ export function middleware(request: NextRequest) {
   // If it's the main domain (class-on.kr or www.class-on.kr)
   if (parts.length === 2 || (parts.length === 3 && parts[0] === 'www')) {
     // Only allow root path and specific routes on main domain
-    const allowedPaths = ['/', '/login', '/signup', '/dashboard', '/info']
+    const allowedPaths = ['/', '/login', '/signup', '/dashboard', '/info', '/forgot-password', '/reset-password']
     const isAllowedPath = allowedPaths.some(path =>
       url.pathname === path || url.pathname.startsWith(path + '/')
     )
