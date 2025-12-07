@@ -24,6 +24,9 @@ class DynamicCORSMiddleware(BaseHTTPMiddleware):
 
         # Check if origin matches *.class-on.kr pattern
         if origin:
+            # Allow main domain class-on.kr
+            if origin == "https://class-on.kr":
+                allowed_origins.append(origin)
             # Allow all subdomains of class-on.kr
             if re.match(r"^https://[a-zA-Z0-9-]+\.class-on\.kr$", origin):
                 allowed_origins.append(origin)
