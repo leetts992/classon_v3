@@ -12,6 +12,7 @@ import {
   LogOut,
   ExternalLink,
   Users,
+  MessageCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -42,6 +43,11 @@ const menuItems = [
     icon: BarChart3,
     label: "매출 분석",
     href: "/dashboard/analytics",
+  },
+  {
+    icon: MessageCircle,
+    label: "카카오 로그인",
+    href: "/dashboard/kakao",
   },
   {
     icon: Settings,
