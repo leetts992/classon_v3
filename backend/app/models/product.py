@@ -1,6 +1,7 @@
 from sqlalchemy import Column, String, Integer, Boolean, DateTime, Text, Enum, ForeignKey
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
+from sqlalchemy.dialects.postgresql import JSON
 from app.core.database import Base
 import uuid
 import enum
@@ -33,6 +34,8 @@ class Product(Base):
     banner_image = Column(String, nullable=True)  # 배너 이미지 (상단 큰 이미지)
     curriculum = Column(Text, nullable=True)  # 커리큘럼 (HTML/Markdown)
     schedule_info = Column(Text, nullable=True)  # 강의 일정 정보 (HTML/Markdown)
+    product_options = Column(JSON, nullable=True)  # 강의 상품 옵션 [{"name": "온라인", "price": 100000, "description": "12/16까지 얼리버드"}]
+    additional_options = Column(JSON, nullable=True)  # 추가 옵션 [{"name": "교재", "price": 20000}]
 
     # 결제 유도 모달 설정
     modal_bg_color = Column(String, default="#1a1a1a")

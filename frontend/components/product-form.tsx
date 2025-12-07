@@ -55,6 +55,8 @@ export function ProductForm({ product }: ProductFormProps) {
   const [curriculum, setCurriculum] = useState("");
   const [scheduleInfo, setScheduleInfo] = useState("");
   const [isUploadingBanner, setIsUploadingBanner] = useState(false);
+  const [productOptions, setProductOptions] = useState<Array<{name: string; price?: number; description?: string}>>([]);
+  const [additionalOptions, setAdditionalOptions] = useState<Array<{name: string; price: number; description?: string}>>([]);
 
   // 결제 유도 모달 설정
   const [modalBgColor, setModalBgColor] = useState("#1a1a1a");
@@ -89,6 +91,8 @@ export function ProductForm({ product }: ProductFormProps) {
       setBannerImage(product.banner_image || "");
       setCurriculum(product.curriculum || "");
       setScheduleInfo(product.schedule_info || "");
+      setProductOptions(product.product_options || []);
+      setAdditionalOptions(product.additional_options || []);
 
       // 모달 설정 로드
       setModalBgColor(product.modal_bg_color || "#1a1a1a");
@@ -184,6 +188,8 @@ export function ProductForm({ product }: ProductFormProps) {
         banner_image: bannerImage || undefined,
         curriculum: curriculum || undefined,
         schedule_info: scheduleInfo || undefined,
+        product_options: productOptions.length > 0 ? productOptions : undefined,
+        additional_options: additionalOptions.length > 0 ? additionalOptions : undefined,
 
         // 모달 설정
         modal_bg_color: modalBgColor,
@@ -452,6 +458,137 @@ export function ProductForm({ product }: ProductFormProps) {
                     value={scheduleInfo}
                     onChange={setScheduleInfo}
                   />
+                </div>
+
+                {/* Product Options */}
+                <div className="space-y-4">
+                  <div>
+                    <Label>강의 상품 옵션 (선택사항)</Label>
+                    <p className="text-sm text-gray-600 mt-1">
+                      고객이 선택할 수 있는 강의 상품 옵션입니다. (예: 온라인, 오프라인)
+                    </p>
+                  </div>
+
+                  {productOptions.map((option, idx) => (
+                    <div key={idx} className="flex gap-3 items-start p-4 border border-gray-200 rounded-lg">
+                      <div className="flex-1 grid grid-cols-3 gap-3">
+                        <Input
+                          placeholder="옵션 이름 (예: 온라인)"
+                          value={option.name}
+                          onChange={(e) => {
+                            const newOptions = [...productOptions];
+                            newOptions[idx].name = e.target.value;
+                            setProductOptions(newOptions);
+                          }}
+                        />
+                        <Input
+                          type="number"
+                          placeholder="가격 (선택, 원)"
+                          value={option.price || ''}
+                          onChange={(e) => {
+                            const newOptions = [...productOptions];
+                            newOptions[idx].price = e.target.value ? parseInt(e.target.value) : undefined;
+                            setProductOptions(newOptions);
+                          }}
+                        />
+                        <Input
+                          placeholder="설명 (예: 얼리버드)"
+                          value={option.description || ''}
+                          onChange={(e) => {
+                            const newOptions = [...productOptions];
+                            newOptions[idx].description = e.target.value;
+                            setProductOptions(newOptions);
+                          }}
+                        />
+                      </div>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setProductOptions(productOptions.filter((_, i) => i !== idx));
+                        }}
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ))}
+
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      setProductOptions([...productOptions, { name: '', description: '' }]);
+                    }}
+                  >
+                    + 강의 상품 옵션 추가
+                  </Button>
+                </div>
+
+                {/* Additional Options */}
+                <div className="space-y-4">
+                  <div>
+                    <Label>추가 옵션 (선택사항)</Label>
+                    <p className="text-sm text-gray-600 mt-1">
+                      추가로 구매할 수 있는 옵션입니다. (예: 교재, 굿즈)
+                    </p>
+                  </div>
+
+                  {additionalOptions.map((option, idx) => (
+                    <div key={idx} className="flex gap-3 items-start p-4 border border-gray-200 rounded-lg">
+                      <div className="flex-1 grid grid-cols-3 gap-3">
+                        <Input
+                          placeholder="옵션 이름 (예: 교재)"
+                          value={option.name}
+                          onChange={(e) => {
+                            const newOptions = [...additionalOptions];
+                            newOptions[idx].name = e.target.value;
+                            setAdditionalOptions(newOptions);
+                          }}
+                        />
+                        <Input
+                          type="number"
+                          placeholder="가격 (필수, 원)"
+                          value={option.price || ''}
+                          onChange={(e) => {
+                            const newOptions = [...additionalOptions];
+                            newOptions[idx].price = parseInt(e.target.value) || 0;
+                            setAdditionalOptions(newOptions);
+                          }}
+                          required
+                        />
+                        <Input
+                          placeholder="설명 (선택)"
+                          value={option.description || ''}
+                          onChange={(e) => {
+                            const newOptions = [...additionalOptions];
+                            newOptions[idx].description = e.target.value;
+                            setAdditionalOptions(newOptions);
+                          }}
+                        />
+                      </div>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setAdditionalOptions(additionalOptions.filter((_, i) => i !== idx));
+                        }}
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ))}
+
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      setAdditionalOptions([...additionalOptions, { name: '', price: 0 }]);
+                    }}
+                  >
+                    + 추가 옵션 추가
+                  </Button>
                 </div>
               </TabsContent>
 

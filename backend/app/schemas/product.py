@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Optional, List, Dict, Any
 from datetime import datetime
 from enum import Enum
 
@@ -27,6 +27,8 @@ class ProductBase(BaseModel):
     banner_image: Optional[str] = None
     curriculum: Optional[str] = None
     schedule_info: Optional[str] = None
+    product_options: Optional[List[Dict[str, Any]]] = None
+    additional_options: Optional[List[Dict[str, Any]]] = None
 
     # 결제 유도 모달 설정
     modal_bg_color: Optional[str] = "#1a1a1a"
@@ -64,6 +66,8 @@ class ProductUpdate(BaseModel):
     banner_image: Optional[str] = None
     curriculum: Optional[str] = None
     schedule_info: Optional[str] = None
+    product_options: Optional[List[Dict[str, Any]]] = None
+    additional_options: Optional[List[Dict[str, Any]]] = None
 
     # 결제 유도 모달 설정
     modal_bg_color: Optional[str] = None

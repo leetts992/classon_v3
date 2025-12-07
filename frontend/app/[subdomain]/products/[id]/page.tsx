@@ -6,6 +6,7 @@ import StoreHeader from "@/components/store/StoreHeader";
 import StoreFooter from "@/components/store/StoreFooter";
 import KakaoChannelButton from "@/components/store/KakaoChannelButton";
 import { publicStoreAPI, Product as APIProduct, StoreInfo } from "@/lib/api";
+import { Label } from "@/components/ui/label";
 import { ChevronDown } from "lucide-react";
 
 export default function ProductDetailPage() {
@@ -20,6 +21,7 @@ export default function ProductDetailPage() {
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState<'description' | 'curriculum' | 'schedule'>('description');
   const [selectedOption, setSelectedOption] = useState('');
+  const [selectedAdditionalOptions, setSelectedAdditionalOptions] = useState<string[]>([]);
 
   // 카운트다운 타이머 상태
   const [timeLeft, setTimeLeft] = useState({
@@ -150,11 +152,11 @@ export default function ProductDetailPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* 왼쪽: 메인 컨텐츠 */}
             <div className="lg:col-span-2 space-y-6">
-              {/* 배너 이미지 */}
-              {product.banner_image && (
+              {/* 배너 이미지 또는 썸네일 */}
+              {(product.banner_image || product.thumbnail) && (
                 <div className="w-full rounded-lg overflow-hidden">
                   <img
-                    src={product.banner_image}
+                    src={product.banner_image || product.thumbnail}
                     alt={product.title}
                     className="w-full h-auto"
                   />
@@ -265,38 +267,63 @@ export default function ProductDetailPage() {
                 </div>
 
                 {/* 강의 상품 선택 */}
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">
-                    강의 상품
-                  </label>
-                  <div className="relative">
-                    <select
-                      value={selectedOption}
-                      onChange={(e) => setSelectedOption(e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-[#FF8547] focus:border-transparent"
-                    >
-                      <option value="">온라인 (12/16까지 얼리버드 혜택)</option>
-                      <option value="online">온라인</option>
-                    </select>
-                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+                {product.product_options && product.product_options.length > 0 && (
+                  <div className="space-y-2">
+                    <Label htmlFor="productOption" className="text-sm font-medium text-gray-700">
+                      강의 상품
+                    </Label>
+                    <div className="relative">
+                      <select
+                        id="productOption"
+                        value={selectedOption}
+                        onChange={(e) => setSelectedOption(e.target.value)}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-[#FF8547] focus:border-transparent"
+                      >
+                        <option value="">선택해주세요</option>
+                        {product.product_options.map((opt, idx) => (
+                          <option key={idx} value={opt.name}>
+                            {opt.name}
+                            {opt.description && ` (${opt.description})`}
+                            {opt.price && ` - ${formatPrice(opt.price)}`}
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+                    </div>
                   </div>
-                </div>
+                )}
 
-                {/* 옵션 선택 */}
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">
-                    옵션 (선택)
-                  </label>
-                  <div className="relative">
-                    <select
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg appearance-none bg-gray-50 text-gray-500 cursor-not-allowed"
-                      disabled
-                    >
-                      <option>옵션 상품을 선택해주세요.</option>
-                    </select>
-                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+                {/* 추가 옵션 선택 */}
+                {product.additional_options && product.additional_options.length > 0 && (
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium text-gray-700">
+                      추가 옵션 (선택)
+                    </Label>
+                    <div className="space-y-2">
+                      {product.additional_options.map((opt, idx) => (
+                        <div key={idx} className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id={`addon-${idx}`}
+                            checked={selectedAdditionalOptions.includes(opt.name)}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setSelectedAdditionalOptions([...selectedAdditionalOptions, opt.name]);
+                              } else {
+                                setSelectedAdditionalOptions(selectedAdditionalOptions.filter(n => n !== opt.name));
+                              }
+                            }}
+                            className="w-4 h-4 text-[#FF8547] border-gray-300 rounded focus:ring-[#FF8547]"
+                          />
+                          <label htmlFor={`addon-${idx}`} className="text-sm text-gray-700 cursor-pointer">
+                            {opt.name} (+{formatPrice(opt.price)})
+                            {opt.description && <span className="text-gray-500"> - {opt.description}</span>}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* 총 결제 금액 */}
                 <div className="pt-4 border-t border-gray-200">

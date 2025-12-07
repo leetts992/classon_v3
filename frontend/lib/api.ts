@@ -84,6 +84,8 @@ export interface Product {
   banner_image?: string;
   curriculum?: string;
   schedule_info?: string;
+  product_options?: Array<{name: string; price?: number; description?: string}>;
+  additional_options?: Array<{name: string; price: number; description?: string}>;
 
   // 결제 유도 모달 설정
   modal_bg_color?: string;
@@ -117,6 +119,8 @@ export interface ProductCreateRequest {
   banner_image?: string;
   curriculum?: string;
   schedule_info?: string;
+  product_options?: Array<{name: string; price?: number; description?: string}>;
+  additional_options?: Array<{name: string; price: number; description?: string}>;
 
   // 결제 유도 모달 설정
   modal_bg_color?: string;
@@ -149,6 +153,8 @@ export interface ProductUpdateRequest {
   banner_image?: string;
   curriculum?: string;
   schedule_info?: string;
+  product_options?: Array<{name: string; price?: number; description?: string}>;
+  additional_options?: Array<{name: string; price: number; description?: string}>;
 
   // 결제 유도 모달 설정
   modal_bg_color?: string;
