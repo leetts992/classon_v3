@@ -17,9 +17,12 @@ class Customer(Base):
 
     # Basic Info
     email = Column(String, nullable=False, index=True)
-    hashed_password = Column(String, nullable=False)
+    hashed_password = Column(String, nullable=True)  # Nullable for Kakao-only accounts
     full_name = Column(String, nullable=False)
     phone = Column(String, nullable=True)
+
+    # Kakao Login
+    kakao_id = Column(String, nullable=True, index=True)  # Kakao user ID
 
     # Status
     is_active = Column(Boolean, default=True)

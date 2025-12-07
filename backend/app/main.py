@@ -92,10 +92,11 @@ async def health_check():
 
 
 # Import and include routers
-from app.api.v1 import auth, products, upload, orders, customers
+from app.api.v1 import auth, products, upload, orders, customers, kakao_auth
 
 app.include_router(auth.router, prefix=settings.API_V1_STR, tags=["auth"])
 app.include_router(products.router, prefix=settings.API_V1_STR, tags=["products"])
 app.include_router(upload.router, prefix=settings.API_V1_STR, tags=["upload"])
 app.include_router(orders.router, prefix=settings.API_V1_STR, tags=["orders"])
 app.include_router(customers.router, prefix=settings.API_V1_STR, tags=["customers"])
+app.include_router(kakao_auth.router, prefix=f"{settings.API_V1_STR}/auth", tags=["kakao-auth"])

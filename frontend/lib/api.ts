@@ -624,6 +624,39 @@ export const customerAuthAPI = {
   },
 };
 
+// Kakao Auth API (for customer Kakao login on subdomain sites)
+export const kakaoAuthAPI = {
+  // Initiate Kakao login - returns authorization URL
+  initiateLogin: async (subdomain: string): Promise<{ authorization_url: string; state: string }> => {
+    const response = await fetch(`${API_BASE_URL}/auth/kakao/login/${subdomain}`);
+
+    if (!response.ok) {
+      const error: APIError = await response.json();
+      throw new Error(error.detail || 'Failed to initiate Kakao login');
+    }
+
+    return response.json();
+  },
+
+  // Handle Kakao callback (called after redirect)
+  handleCallback: async (
+    code: string,
+    state: string,
+    subdomain: string
+  ): Promise<{ access_token: string; token_type: string; customer: Customer }> => {
+    const response = await fetch(
+      `${API_BASE_URL}/auth/kakao/callback?code=${encodeURIComponent(code)}&state=${encodeURIComponent(state)}&subdomain=${encodeURIComponent(subdomain)}`
+    );
+
+    if (!response.ok) {
+      const error: APIError = await response.json();
+      throw new Error(error.detail || 'Kakao login failed');
+    }
+
+    return response.json();
+  },
+};
+
 // Customer Management API (for instructors)
 export const customersAPI = {
   // List all customers for current instructor

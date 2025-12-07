@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { customerAuthAPI, publicStoreAPI } from "@/lib/api";
+import { customerAuthAPI, publicStoreAPI, kakaoAuthAPI } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,6 +12,7 @@ import { Loader2 } from "lucide-react";
 export default function CustomerLoginPage() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const subdomain = params.subdomain as string;
 
   const [email, setEmail] = useState("");
@@ -35,6 +36,51 @@ export default function CustomerLoginPage() {
       fetchStoreInfo();
     }
   }, [subdomain]);
+
+  // Handle Kakao OAuth callback
+  useEffect(() => {
+    const handleKakaoCallback = async () => {
+      const code = searchParams.get("code");
+      const state = searchParams.get("state");
+
+      if (code && state) {
+        setIsLoading(true);
+        setError("");
+
+        try {
+          const response = await kakaoAuthAPI.handleCallback(code, state, subdomain);
+
+          // Store customer token
+          localStorage.setItem("customer_token", response.access_token);
+          localStorage.setItem("customer_subdomain", subdomain);
+
+          // Redirect to store home
+          router.push("/");
+        } catch (err: any) {
+          setError(err.message || "카카오 로그인에 실패했습니다.");
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    handleKakaoCallback();
+  }, [searchParams, subdomain, router]);
+
+  const handleKakaoLogin = async () => {
+    setError("");
+    try {
+      const { authorization_url, state } = await kakaoAuthAPI.initiateLogin(subdomain);
+
+      // Save state to verify later
+      sessionStorage.setItem("kakao_state", state);
+
+      // Redirect to Kakao OAuth page
+      window.location.href = authorization_url;
+    } catch (err: any) {
+      setError(err.message || "카카오 로그인을 시작할 수 없습니다.");
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -72,13 +118,20 @@ export default function CustomerLoginPage() {
           {/* Kakao Login Button */}
           <button
             type="button"
-            className="w-full bg-[#FEE500] hover:bg-[#FDD835] text-black font-medium py-4 px-6 rounded-lg flex items-center justify-center gap-3 transition-colors"
-            onClick={() => alert("카카오 로그인은 준비 중입니다")}
+            className="w-full bg-[#FEE500] hover:bg-[#FDD835] text-black font-medium py-4 px-6 rounded-lg flex items-center justify-center gap-3 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            onClick={handleKakaoLogin}
+            disabled={isLoading}
           >
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <path d="M10 0C4.477 0 0 3.58 0 8c0 2.86 1.889 5.37 4.716 6.767-.196.72-.729 2.697-.835 3.116-.127.502.184.496.388.36.17-.113 2.716-1.818 3.745-2.51.635.088 1.289.134 1.986.134 5.523 0 10-3.58 10-8s-4.477-8-10-8z" fill="#000"/>
-            </svg>
-            카카오로 시작하기
+            {isLoading ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
+            ) : (
+              <>
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <path d="M10 0C4.477 0 0 3.58 0 8c0 2.86 1.889 5.37 4.716 6.767-.196.72-.729 2.697-.835 3.116-.127.502.184.496.388.36.17-.113 2.716-1.818 3.745-2.51.635.088 1.289.134 1.986.134 5.523 0 10-3.58 10-8s-4.477-8-10-8z" fill="#000"/>
+                </svg>
+                카카오로 시작하기
+              </>
+            )}
           </button>
 
           {/* Divider */}
