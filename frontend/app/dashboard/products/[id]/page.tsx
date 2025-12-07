@@ -14,27 +14,26 @@ export default function EditProductPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const fetchProduct = async () => {
-    try {
-      setLoading(true);
-      const data = await productsAPI.get(productId);
-      setProduct(data);
-    } catch (err: any) {
-      setError(err.message || "상품을 불러오는데 실패했습니다.");
-      if (err.message.includes("Authentication")) {
-        router.push("/login");
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    if (productId) {
-      fetchProduct();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [productId]);
+    if (!productId) return;
+
+    const fetchProduct = async () => {
+      try {
+        setLoading(true);
+        const data = await productsAPI.get(productId);
+        setProduct(data);
+      } catch (err: any) {
+        setError(err.message || "상품을 불러오는데 실패했습니다.");
+        if (err.message.includes("Authentication")) {
+          router.push("/login");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProduct();
+  }, [productId, router]);
 
   if (loading) {
     return (
