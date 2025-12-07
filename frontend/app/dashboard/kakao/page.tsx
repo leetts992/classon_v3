@@ -129,13 +129,28 @@ export default function KakaoSettingsPage() {
               </p>
             </div>
             <div className="ml-4">
-              <Switch
-                checked={settings.kakaoEnabled}
-                onCheckedChange={(checked) =>
-                  setSettings({ ...settings, kakaoEnabled: checked })
-                }
-                className="scale-150"
-              />
+              <button
+                type="button"
+                role="switch"
+                aria-checked={settings.kakaoEnabled}
+                onClick={() => setSettings({ ...settings, kakaoEnabled: !settings.kakaoEnabled })}
+                className={`
+                  relative inline-flex h-8 w-16 shrink-0 cursor-pointer rounded-full border-2 border-transparent
+                  transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2
+                  focus-visible:ring-white focus-visible:ring-opacity-75
+                  ${settings.kakaoEnabled ? 'bg-primary' : 'bg-gray-300'}
+                `}
+              >
+                <span className="sr-only">카카오 로그인 사용</span>
+                <span
+                  aria-hidden="true"
+                  className={`
+                    pointer-events-none inline-block h-7 w-7 transform rounded-full bg-white shadow-lg ring-0
+                    transition duration-200 ease-in-out
+                    ${settings.kakaoEnabled ? 'translate-x-8' : 'translate-x-0'}
+                  `}
+                />
+              </button>
             </div>
           </div>
 

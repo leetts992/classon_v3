@@ -47,6 +47,12 @@ export function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
+  // Allow Next.js internal requests (RSC, prefetch, etc.) on subdomains
+  if (url.searchParams.has('_rsc') || url.searchParams.has('_next')) {
+    // For RSC requests on subdomains, don't rewrite
+    return NextResponse.next()
+  }
+
   // Rewrite to the subdomain route
   // e.g., admin.class-on.kr/ -> class-on.kr/admin/
   // e.g., admin.class-on.kr/courses -> class-on.kr/admin/courses
