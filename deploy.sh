@@ -24,39 +24,6 @@ fi
 
 chmod 400 "$PEM_FILE"
 
-# 로컬에서 Git 커밋 및 푸시
-echo "📝 Git에 변경사항 커밋 및 푸시..."
-echo ""
-
-# Git status 확인
-if git diff-index --quiet HEAD --; then
-    echo "✓ 변경사항이 없습니다."
-else
-    echo "변경된 파일들:"
-    git status --short
-    echo ""
-
-    # 모든 변경사항 추가
-    git add .
-
-    # 커밋 메시지 생성
-    COMMIT_MSG="Deploy: $(date '+%Y-%m-%d %H:%M:%S')
-
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
-
-Co-Authored-By: Claude <noreply@anthropic.com>"
-
-    # 커밋
-    git commit -m "$COMMIT_MSG"
-
-    # 푸시
-    echo "📤 GitHub에 푸시 중..."
-    git push origin main
-    echo "✓ GitHub 푸시 완료!"
-fi
-
-echo ""
-
 # EC2 서버에 명령 실행
 echo "🚀 EC2 서버에 배포 시작..."
 echo ""
