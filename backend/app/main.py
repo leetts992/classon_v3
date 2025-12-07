@@ -1,7 +1,10 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.responses import Response
 from app.core.config import settings
 from app.core.database import engine, Base
+import re
 
 # Create FastAPI app
 app = FastAPI(
@@ -11,7 +14,38 @@ app = FastAPI(
     docs_url=f"{settings.API_V1_STR}/docs",
 )
 
-# Set up CORS
+# Custom CORS middleware to allow all *.class-on.kr subdomains
+class DynamicCORSMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        origin = request.headers.get("origin")
+
+        # List of allowed origins
+        allowed_origins = settings.BACKEND_CORS_ORIGINS.copy()
+
+        # Check if origin matches *.class-on.kr pattern
+        if origin:
+            # Allow all subdomains of class-on.kr
+            if re.match(r"^https://[a-zA-Z0-9-]+\.class-on\.kr$", origin):
+                allowed_origins.append(origin)
+            # Also allow localhost for development
+            if origin.startswith("http://localhost"):
+                allowed_origins.append(origin)
+
+        response = await call_next(request)
+
+        # Set CORS headers if origin is allowed
+        if origin in allowed_origins:
+            response.headers["Access-Control-Allow-Origin"] = origin
+            response.headers["Access-Control-Allow-Credentials"] = "true"
+            response.headers["Access-Control-Allow-Methods"] = "*"
+            response.headers["Access-Control-Allow-Headers"] = "*"
+
+        return response
+
+# Add custom CORS middleware
+app.add_middleware(DynamicCORSMiddleware)
+
+# Set up standard CORS for known origins
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.BACKEND_CORS_ORIGINS,
