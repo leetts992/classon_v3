@@ -64,7 +64,7 @@ export default function StoreHeader({ storeName }: StoreHeaderProps) {
     localStorage.removeItem(`cart_${subdomain}`);
     setIsLoggedIn(false);
     setCartCount(0);
-    router.push(`/${subdomain}`);
+    router.push("/");
   };
 
   return (
@@ -72,20 +72,20 @@ export default function StoreHeader({ storeName }: StoreHeaderProps) {
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo/Store Name */}
-          <Link href={`/${subdomain}`} className="text-2xl font-bold">
+          <Link href="/" className="text-2xl font-bold">
             {storeName}
           </Link>
 
           {/* Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
             <Link
-              href={`/${subdomain}`}
+              href="/"
               className="text-gray-700 hover:text-gray-900"
             >
               홈
             </Link>
             <Link
-              href={`/${subdomain}/courses`}
+              href="/courses"
               className="text-gray-700 hover:text-gray-900"
             >
               강의
@@ -95,7 +95,7 @@ export default function StoreHeader({ storeName }: StoreHeaderProps) {
           {/* Auth & Cart Buttons */}
           <div className="flex items-center gap-3">
             {/* Cart Icon */}
-            <Link href={`/${subdomain}/cart`}>
+            <Link href="/cart">
               <Button variant="ghost" size="sm" className="gap-2 relative">
                 <ShoppingCart className="w-4 h-4" />
                 {cartCount > 0 && (
@@ -108,7 +108,7 @@ export default function StoreHeader({ storeName }: StoreHeaderProps) {
 
             {isLoggedIn ? (
               <>
-                <Link href={`/${subdomain}/my-courses`}>
+                <Link href="/my-courses">
                   <Button
                     variant="ghost"
                     size="sm"
@@ -130,12 +130,12 @@ export default function StoreHeader({ storeName }: StoreHeaderProps) {
               </>
             ) : (
               <>
-                <Link href={`/${subdomain}/login`}>
+                <Link href="/login">
                   <Button variant="ghost" size="sm">
                     로그인
                   </Button>
                 </Link>
-                <Link href={`/${subdomain}/signup`}>
+                <Link href="/signup">
                   <Button size="sm">
                     회원가입
                   </Button>

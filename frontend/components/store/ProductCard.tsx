@@ -41,8 +41,8 @@ export default function ProductCard({
     ? Math.round(((price - discountPrice) / price) * 100)
     : 0;
 
-  // Build product URL
-  const productUrl = subdomain ? `/${subdomain}/products/${id}` : `/product/${id}`;
+  // Build product URL - on subdomain pages, use relative path without subdomain prefix
+  const productUrl = subdomain ? `/products/${id}` : `/product/${id}`;
 
   return (
     <motion.div
