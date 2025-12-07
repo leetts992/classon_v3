@@ -113,11 +113,7 @@ export default function RichTextEditor({ value, onChange }: RichTextEditorProps)
     }
   }, [editor]);
 
-  if (!editor) {
-    return null;
-  }
-
-  return (
+  return editor ? (
     <div className="border border-gray-200 rounded-lg overflow-hidden bg-white">
       {/* Toolbar */}
       <div className="bg-gray-100 border-b border-gray-200 p-2 flex flex-wrap gap-1">
@@ -233,5 +229,5 @@ export default function RichTextEditor({ value, onChange }: RichTextEditorProps)
         </div>
       </div>
     </div>
-  );
+  ) : null;
 }
