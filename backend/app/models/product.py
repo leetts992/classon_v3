@@ -28,6 +28,12 @@ class Product(Base):
     file_url = Column(String, nullable=True)  # S3 URL
     is_published = Column(Boolean, default=False)
 
+    # 상세 페이지 추가 정보
+    is_new = Column(Boolean, default=False)  # NEW 뱃지 표시 여부
+    banner_image = Column(String, nullable=True)  # 배너 이미지 (상단 큰 이미지)
+    curriculum = Column(Text, nullable=True)  # 커리큘럼 (HTML/Markdown)
+    schedule_info = Column(Text, nullable=True)  # 강의 일정 정보 (HTML/Markdown)
+
     # 결제 유도 모달 설정
     modal_bg_color = Column(String, default="#1a1a1a")
     modal_bg_opacity = Column(Integer, default=100)  # 0-100 (percentage)

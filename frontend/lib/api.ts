@@ -79,6 +79,12 @@ export interface Product {
   created_at: string;
   updated_at?: string;
 
+  // 상세 페이지 추가 정보
+  is_new?: boolean;
+  banner_image?: string;
+  curriculum?: string;
+  schedule_info?: string;
+
   // 결제 유도 모달 설정
   modal_bg_color?: string;
   modal_bg_opacity?: number;
@@ -106,6 +112,12 @@ export interface ProductCreateRequest {
   file_url?: string;
   is_published?: boolean;
 
+  // 상세 페이지 추가 정보
+  is_new?: boolean;
+  banner_image?: string;
+  curriculum?: string;
+  schedule_info?: string;
+
   // 결제 유도 모달 설정
   modal_bg_color?: string;
   modal_bg_opacity?: number;
@@ -131,6 +143,12 @@ export interface ProductUpdateRequest {
   duration?: number;
   file_url?: string;
   is_published?: boolean;
+
+  // 상세 페이지 추가 정보
+  is_new?: boolean;
+  banner_image?: string;
+  curriculum?: string;
+  schedule_info?: string;
 
   // 결제 유도 모달 설정
   modal_bg_color?: string;

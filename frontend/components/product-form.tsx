@@ -49,6 +49,13 @@ export function ProductForm({ product }: ProductFormProps) {
   const [fileUrl, setFileUrl] = useState("");
   const [isPublished, setIsPublished] = useState(false);
 
+  // 상세 페이지 추가 정보
+  const [isNew, setIsNew] = useState(false);
+  const [bannerImage, setBannerImage] = useState("");
+  const [curriculum, setCurriculum] = useState("");
+  const [scheduleInfo, setScheduleInfo] = useState("");
+  const [isUploadingBanner, setIsUploadingBanner] = useState(false);
+
   // 결제 유도 모달 설정
   const [modalBgColor, setModalBgColor] = useState("#1a1a1a");
   const [modalBgOpacity, setModalBgOpacity] = useState("100");
@@ -76,6 +83,12 @@ export function ProductForm({ product }: ProductFormProps) {
       setThumbnail(product.thumbnail || "");
       setFileUrl(product.file_url || "");
       setIsPublished(product.is_published);
+
+      // 상세 페이지 정보 로드
+      setIsNew(product.is_new || false);
+      setBannerImage(product.banner_image || "");
+      setCurriculum(product.curriculum || "");
+      setScheduleInfo(product.schedule_info || "");
 
       // 모달 설정 로드
       setModalBgColor(product.modal_bg_color || "#1a1a1a");
@@ -105,6 +118,23 @@ export function ProductForm({ product }: ProductFormProps) {
       setError(err.message || "썸네일 업로드에 실패했습니다.");
     } finally {
       setIsUploadingThumbnail(false);
+    }
+  };
+
+  const handleBannerUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploadingBanner(true);
+    setError("");
+
+    try {
+      const response = await uploadAPI.uploadImage(file);
+      setBannerImage(response.url);
+    } catch (err: any) {
+      setError(err.message || "배너 이미지 업로드에 실패했습니다.");
+    } finally {
+      setIsUploadingBanner(false);
     }
   };
 
@@ -148,6 +178,12 @@ export function ProductForm({ product }: ProductFormProps) {
         thumbnail: thumbnail || undefined,
         file_url: fileUrl || undefined,
         is_published: isPublished,
+
+        // 상세 페이지 추가 정보
+        is_new: isNew,
+        banner_image: bannerImage || undefined,
+        curriculum: curriculum || undefined,
+        schedule_info: scheduleInfo || undefined,
 
         // 모달 설정
         modal_bg_color: modalBgColor,
@@ -327,15 +363,94 @@ export function ProductForm({ product }: ProductFormProps) {
               </TabsContent>
 
               {/* Detail Page Tab */}
-              <TabsContent value="detail" className="p-6 space-y-4">
+              <TabsContent value="detail" className="p-6 space-y-6">
+                {/* NEW Badge */}
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="isNew"
+                    checked={isNew}
+                    onChange={(e) => setIsNew(e.target.checked)}
+                    className="w-4 h-4 text-[#FF8547] border-gray-300 rounded focus:ring-[#FF8547]"
+                  />
+                  <Label htmlFor="isNew" className="font-normal cursor-pointer">
+                    NEW 뱃지 표시 (상품 카드에 NEW 라벨 표시)
+                  </Label>
+                </div>
+
+                {/* Banner Image Upload */}
                 <div className="space-y-2">
-                  <Label>상세 페이지 내용</Label>
+                  <Label htmlFor="banner">배너 이미지 (상단 큰 이미지)</Label>
                   <p className="text-sm text-gray-600">
-                    이미지를 드래그 앤 드롭하거나 툴바의 이미지 버튼을 클릭하여 추가할 수 있습니다.
+                    상품 상세 페이지 상단에 표시될 큰 배너 이미지입니다.
+                  </p>
+                  <div className="space-y-3">
+                    {bannerImage && (
+                      <div className="relative w-full border border-gray-200 rounded-lg overflow-hidden bg-gray-50">
+                        <img
+                          src={bannerImage}
+                          alt="Banner preview"
+                          className="w-full h-auto"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setBannerImage("")}
+                          className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-full hover:bg-red-600 shadow-lg"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    )}
+                    <Input
+                      id="banner"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleBannerUpload}
+                      disabled={isUploadingBanner}
+                      className="cursor-pointer"
+                    />
+                    {isUploadingBanner && (
+                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        배너 이미지 업로드 중...
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Detailed Description */}
+                <div className="space-y-2">
+                  <Label>강의 소개 (상세 설명)</Label>
+                  <p className="text-sm text-gray-600">
+                    "강의소개" 탭에 표시될 내용입니다. 이미지를 드래그 앤 드롭하거나 툴바의 이미지 버튼을 클릭하여 추가할 수 있습니다.
                   </p>
                   <RichTextEditor
                     value={detailedDescription}
                     onChange={setDetailedDescription}
+                  />
+                </div>
+
+                {/* Curriculum */}
+                <div className="space-y-2">
+                  <Label>커리큘럼 (선택사항)</Label>
+                  <p className="text-sm text-gray-600">
+                    "커리큘럼" 탭에 표시될 내용입니다. 입력하지 않으면 탭이 표시되지 않습니다.
+                  </p>
+                  <RichTextEditor
+                    value={curriculum}
+                    onChange={setCurriculum}
+                  />
+                </div>
+
+                {/* Schedule Info */}
+                <div className="space-y-2">
+                  <Label>강의 일정 (선택사항)</Label>
+                  <p className="text-sm text-gray-600">
+                    "강의일정" 탭에 표시될 내용입니다. 입력하지 않으면 탭이 표시되지 않습니다.
+                  </p>
+                  <RichTextEditor
+                    value={scheduleInfo}
+                    onChange={setScheduleInfo}
                   />
                 </div>
               </TabsContent>

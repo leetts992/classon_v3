@@ -22,6 +22,12 @@ class ProductBase(BaseModel):
     file_url: Optional[str] = None
     is_published: bool = False
 
+    # 상세 페이지 추가 정보
+    is_new: bool = False
+    banner_image: Optional[str] = None
+    curriculum: Optional[str] = None
+    schedule_info: Optional[str] = None
+
     # 결제 유도 모달 설정
     modal_bg_color: Optional[str] = "#1a1a1a"
     modal_bg_opacity: Optional[int] = Field(100, ge=0, le=100)  # 0-100
@@ -52,6 +58,12 @@ class ProductUpdate(BaseModel):
     duration: Optional[int] = Field(None, ge=0)
     file_url: Optional[str] = None
     is_published: Optional[bool] = None
+
+    # 상세 페이지 추가 정보
+    is_new: Optional[bool] = None
+    banner_image: Optional[str] = None
+    curriculum: Optional[str] = None
+    schedule_info: Optional[str] = None
 
     # 결제 유도 모달 설정
     modal_bg_color: Optional[str] = None

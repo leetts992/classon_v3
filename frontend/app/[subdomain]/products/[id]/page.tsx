@@ -6,7 +6,7 @@ import StoreHeader from "@/components/store/StoreHeader";
 import StoreFooter from "@/components/store/StoreFooter";
 import KakaoChannelButton from "@/components/store/KakaoChannelButton";
 import { publicStoreAPI, Product as APIProduct, StoreInfo } from "@/lib/api";
-import { ShoppingCart, Clock, BookOpen, Flame } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -18,8 +18,10 @@ export default function ProductDetailPage() {
   const [storeInfo, setStoreInfo] = useState<StoreInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [activeTab, setActiveTab] = useState<'description' | 'curriculum' | 'schedule'>('description');
+  const [selectedOption, setSelectedOption] = useState('');
 
-  // 카운트다운 타이머 상태 (항상 최상위에서 선언)
+  // 카운트다운 타이머 상태
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
@@ -55,10 +57,7 @@ export default function ProductDetailPage() {
       setTimeLeft({ days, hours, minutes, seconds });
     };
 
-    // 즉시 계산
     calculateTimeLeft();
-
-    // 1초마다 업데이트
     const timer = setInterval(calculateTimeLeft, 1000);
 
     return () => clearInterval(timer);
@@ -84,75 +83,40 @@ export default function ProductDetailPage() {
     }
   };
 
-  const handleAddToCart = () => {
-    if (!product) return;
-
-    // Get existing cart or create new one
-    const savedCart = localStorage.getItem(`cart_${subdomain}`);
-    const cart = savedCart ? JSON.parse(savedCart) : [];
-
-    // Check if product already in cart
-    const existingIndex = cart.findIndex((item: any) => item.id === product.id);
-    if (existingIndex !== -1) {
-      alert("이미 장바구니에 담긴 상품입니다!");
+  const handleBuyNow = () => {
+    if (!selectedOption) {
+      alert("강의 상품을 선택해주세요!");
       return;
     }
-
-    // Add product to cart
-    const cartItem = {
-      id: product.id,
-      title: product.title,
-      price: product.price,
-      discount_price: product.discount_price,
-      thumbnail: product.thumbnail,
-      type: product.type,
-    };
-
-    cart.push(cartItem);
-    localStorage.setItem(`cart_${subdomain}`, JSON.stringify(cart));
-
-    // Trigger storage event to update header cart count
-    window.dispatchEvent(new Event("storage"));
-
-    alert("장바구니에 담겼습니다!");
-  };
-
-  const handleBuyNow = () => {
     alert("결제 기능은 곧 추가될 예정입니다!");
   };
 
   const formatPrice = (price: number) => {
-    return `₩${price.toLocaleString()}`;
+    return `${price.toLocaleString()}원`;
   };
 
-  const formatDuration = (minutes?: number) => {
-    if (!minutes) return null;
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    return hours > 0 ? `${hours}시간 ${mins}분` : `${mins}분`;
+  const calculateDiscountRate = (price: number, discountPrice: number) => {
+    return Math.round(((price - discountPrice) / price) * 100);
   };
 
   if (loading) {
     return (
       <div className="flex flex-col min-h-screen">
         <StoreHeader storeName="" />
-
-        {/* Skeleton for product detail */}
         <main className="flex-1 py-8">
-          <div className="container max-w-4xl">
-            <div className="bg-white rounded-lg shadow-lg overflow-hidden animate-pulse">
-              <div className="w-full h-96 bg-gray-300" />
-              <div className="p-8 space-y-4">
-                <div className="h-8 bg-gray-300 rounded w-3/4" />
-                <div className="h-6 bg-gray-300 rounded w-1/4" />
-                <div className="h-4 bg-gray-300 rounded w-full" />
-                <div className="h-4 bg-gray-300 rounded w-5/6" />
-                <div className="h-12 bg-gray-300 rounded w-full mt-6" />
+          <div className="container max-w-7xl">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-pulse">
+              <div className="lg:col-span-2 space-y-4">
+                <div className="w-full h-96 bg-gray-300 rounded" />
+                <div className="h-12 bg-gray-300 rounded w-1/3" />
+                <div className="h-64 bg-gray-300 rounded" />
+              </div>
+              <div className="lg:col-span-1">
+                <div className="sticky top-24 bg-gray-300 rounded-lg h-96" />
               </div>
             </div>
           </div>
         </main>
-
         <footer className="bg-gray-100 h-64 animate-pulse" />
       </div>
     );
@@ -181,86 +145,184 @@ export default function ProductDetailPage() {
     <div className="flex flex-col min-h-screen bg-white">
       <StoreHeader storeName={storeInfo?.store_name || "내 스토어"} />
 
-      <main className="flex-1 pb-32">
-        {/* 상세 이미지 중앙 정렬 (780px 기본, 반응형) - 여백 제거 */}
-        {product.detailed_description && (
-          <div className="w-full flex justify-center">
-            <div
-              className="w-full max-w-[780px] prose prose-lg prose-headings:font-bold prose-h1:text-3xl prose-h2:text-2xl prose-p:text-gray-700 prose-a:text-blue-600 prose-img:w-full"
-              dangerouslySetInnerHTML={{ __html: product.detailed_description }}
-            />
-          </div>
-        )}
+      <main className="flex-1 py-8">
+        <div className="container max-w-7xl px-4">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* 왼쪽: 메인 컨텐츠 */}
+            <div className="lg:col-span-2 space-y-6">
+              {/* 배너 이미지 */}
+              {product.banner_image && (
+                <div className="w-full rounded-lg overflow-hidden">
+                  <img
+                    src={product.banner_image}
+                    alt={product.title}
+                    className="w-full h-auto"
+                  />
+                </div>
+              )}
 
-        {/* 상세 설명이 없는 경우 기본 이미지 표시 */}
-        {!product.detailed_description && product.thumbnail && (
-          <div className="w-full flex justify-center">
-            <img
-              src={product.thumbnail}
-              alt={product.title}
-              className="w-full max-w-[780px]"
-            />
-          </div>
-        )}
-      </main>
+              {/* 탭 메뉴 */}
+              <div className="border-b border-gray-200">
+                <div className="flex gap-8">
+                  <button
+                    onClick={() => setActiveTab('description')}
+                    className={`pb-4 px-2 font-medium text-lg transition-colors ${
+                      activeTab === 'description'
+                        ? 'text-[#FF8547] border-b-2 border-[#FF8547]'
+                        : 'text-gray-500 hover:text-gray-700'
+                    }`}
+                  >
+                    강의소개
+                  </button>
+                  {product.curriculum && (
+                    <button
+                      onClick={() => setActiveTab('curriculum')}
+                      className={`pb-4 px-2 font-medium text-lg transition-colors ${
+                        activeTab === 'curriculum'
+                          ? 'text-[#FF8547] border-b-2 border-[#FF8547]'
+                          : 'text-gray-500 hover:text-gray-700'
+                      }`}
+                    >
+                      커리큘럼
+                    </button>
+                  )}
+                  {product.schedule_info && (
+                    <button
+                      onClick={() => setActiveTab('schedule')}
+                      className={`pb-4 px-2 font-medium text-lg transition-colors ${
+                        activeTab === 'schedule'
+                          ? 'text-[#FF8547] border-b-2 border-[#FF8547]'
+                          : 'text-gray-500 hover:text-gray-700'
+                      }`}
+                    >
+                      강의일정
+                    </button>
+                  )}
+                </div>
+              </div>
 
-      {/* 하단 고정 결제 유도 모달 (860px 넓이, 라운드 처리) */}
-      <div className="fixed bottom-4 left-1/2 -translate-x-1/2 w-full max-w-[860px] z-50 px-4">
-        <div
-          className="p-4 shadow-2xl rounded-2xl"
-          style={{
-            backgroundColor: `${product.modal_bg_color || '#1a1a1a'}${Math.round(((product.modal_bg_opacity || 100) / 100) * 255).toString(16).padStart(2, '0')}`
-          }}
-        >
-          <div className="flex items-center justify-between gap-4">
-          {/* 왼쪽: 텍스트 + 카운트다운 (불 이모지 제거) */}
-          <div className="flex items-center gap-3">
-            <div>
-              <p
-                className="font-bold text-sm"
-                style={{ color: product.modal_text_color || '#ffffff' }}
-              >
-                {product.modal_text || '🔥 선착순 마감입니다!'}
-              </p>
-              <div className="flex items-center gap-2 text-sm">
-                <span
-                  className="font-bold"
-                  style={{ color: product.modal_text_color || '#ffffff' }}
-                >
-                  {timeLeft.days}일
-                </span>
-                <span style={{ color: product.modal_text_color || '#ffffff' }}>
-                  {String(timeLeft.hours).padStart(2, '0')}시
-                </span>
-                <span style={{ color: product.modal_text_color || '#ffffff' }}>
-                  {String(timeLeft.minutes).padStart(2, '0')}분
-                </span>
-                <span style={{ color: product.modal_text_color || '#ffffff' }}>
-                  {String(timeLeft.seconds).padStart(2, '0')}초
-                </span>
+              {/* 탭 컨텐츠 */}
+              <div className="prose prose-lg max-w-none">
+                {activeTab === 'description' && (
+                  <div>
+                    <h2 className="text-2xl font-bold mb-4">강의 안내</h2>
+                    {product.detailed_description ? (
+                      <div dangerouslySetInnerHTML={{ __html: product.detailed_description }} />
+                    ) : (
+                      <p className="text-gray-600">{product.description || '상세 설명이 없습니다.'}</p>
+                    )}
+                  </div>
+                )}
+                {activeTab === 'curriculum' && product.curriculum && (
+                  <div dangerouslySetInnerHTML={{ __html: product.curriculum }} />
+                )}
+                {activeTab === 'schedule' && product.schedule_info && (
+                  <div dangerouslySetInnerHTML={{ __html: product.schedule_info }} />
+                )}
+              </div>
+            </div>
+
+            {/* 오른쪽: 구매 정보 카드 (고정) */}
+            <div className="lg:col-span-1">
+              <div className="sticky top-24 bg-white border border-gray-200 rounded-lg p-6 shadow-lg space-y-6">
+                {/* NEW 뱃지 */}
+                {product.is_new && (
+                  <div className="inline-block bg-[#FF8547] text-white text-xs font-bold px-3 py-1 rounded">
+                    NEW
+                  </div>
+                )}
+
+                {/* 상품명 */}
+                <h1 className="text-2xl font-bold text-gray-900 leading-tight">
+                  {product.title}
+                </h1>
+
+                {/* 가격 정보 */}
+                <div className="space-y-2">
+                  {hasDiscount && (
+                    <>
+                      <div className="flex items-center gap-2">
+                        <span className="text-gray-400 line-through text-lg">
+                          {formatPrice(product.price)}
+                        </span>
+                        <span className="text-[#FF8547] font-bold text-xl">
+                          {calculateDiscountRate(product.price, product.discount_price!)}% 할인
+                        </span>
+                      </div>
+                      <div className="text-3xl font-bold text-[#FF8547]">
+                        월 {formatPrice(product.discount_price!)}
+                      </div>
+                    </>
+                  )}
+                  {!hasDiscount && (
+                    <div className="text-3xl font-bold text-gray-900">
+                      {formatPrice(product.price)}
+                    </div>
+                  )}
+                  {hasDiscount && (
+                    <p className="text-sm text-gray-500">최대 12개월 무이자 할부 시</p>
+                  )}
+                </div>
+
+                {/* 강의 상품 선택 */}
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    강의 상품
+                  </label>
+                  <div className="relative">
+                    <select
+                      value={selectedOption}
+                      onChange={(e) => setSelectedOption(e.target.value)}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-[#FF8547] focus:border-transparent"
+                    >
+                      <option value="">온라인 (12/16까지 얼리버드 혜택)</option>
+                      <option value="online">온라인</option>
+                    </select>
+                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+                  </div>
+                </div>
+
+                {/* 옵션 선택 */}
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    옵션 (선택)
+                  </label>
+                  <div className="relative">
+                    <select
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg appearance-none bg-gray-50 text-gray-500 cursor-not-allowed"
+                      disabled
+                    >
+                      <option>옵션 상품을 선택해주세요.</option>
+                    </select>
+                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+                  </div>
+                </div>
+
+                {/* 총 결제 금액 */}
+                <div className="pt-4 border-t border-gray-200">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-lg font-bold text-gray-900">총 결제 금액</span>
+                    <span className="text-2xl font-bold text-[#FF8547]">
+                      월 {formatPrice(displayPrice)}
+                    </span>
+                  </div>
+                  {hasDiscount && (
+                    <p className="text-xs text-gray-500 mb-4">최대 12개월 무이자 할부 시</p>
+                  )}
+
+                  {/* 구매 버튼 */}
+                  <button
+                    onClick={handleBuyNow}
+                    className="w-full bg-[#FF8547] hover:bg-[#FF7035] text-white font-bold py-4 px-6 rounded-lg transition-colors text-lg"
+                  >
+                    강의 구매하기
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-
-          {/* 오른쪽: 버튼 */}
-          <button
-            onClick={handleBuyNow}
-            className="px-6 py-2 font-bold text-white rounded-lg transition-colors text-sm"
-            style={{ backgroundColor: product.modal_button_color || '#ff0000' }}
-            onMouseEnter={(e) => {
-              const color = product.modal_button_color || '#ff0000';
-              // 색상을 약간 어둡게
-              e.currentTarget.style.backgroundColor = color + 'cc';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = product.modal_button_color || '#ff0000';
-            }}
-          >
-            {product.modal_button_text || '0원 무료 신청하기'}
-          </button>
-          </div>
         </div>
-      </div>
+      </main>
 
       {storeInfo && <StoreFooter storeInfo={storeInfo} />}
 
