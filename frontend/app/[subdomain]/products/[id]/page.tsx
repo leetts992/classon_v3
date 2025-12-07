@@ -86,7 +86,17 @@ export default function ProductDetailPage() {
   };
 
   const handleBuyNow = () => {
-    setIsPurchaseModalOpen(true);
+    // Check if desktop (lg breakpoint is 1024px)
+    const isDesktop = window.innerWidth >= 1024;
+
+    if (isDesktop) {
+      // Desktop: Go directly to checkout
+      // TODO: Replace with actual checkout page when ready
+      router.push(`/checkout?product_id=${productId}`);
+    } else {
+      // Mobile: Show modal
+      setIsPurchaseModalOpen(true);
+    }
   };
 
   const handlePurchase = (selectedOption: string, selectedAdditional: string[]) => {
