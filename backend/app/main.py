@@ -31,6 +31,19 @@ class DynamicCORSMiddleware(BaseHTTPMiddleware):
             if origin.startswith("http://localhost"):
                 allowed_origins.append(origin)
 
+        # Handle preflight OPTIONS requests
+        if request.method == "OPTIONS":
+            if origin in allowed_origins:
+                return Response(
+                    status_code=200,
+                    headers={
+                        "Access-Control-Allow-Origin": origin,
+                        "Access-Control-Allow-Credentials": "true",
+                        "Access-Control-Allow-Methods": "*",
+                        "Access-Control-Allow-Headers": "*",
+                    }
+                )
+
         response = await call_next(request)
 
         # Set CORS headers if origin is allowed
