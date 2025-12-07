@@ -261,11 +261,11 @@ export default function ProductDetailPage() {
               )}
 
               {/* 탭 메뉴 - 항상 표시, 스크롤 시 상단 고정 */}
-              <div className="sticky top-16 bg-white z-20 shadow-sm">
-                <div className="flex gap-8 h-14 items-center justify-center">
+              <div className="sticky top-16 bg-white z-20 border-b border-gray-200">
+                <div className="flex h-14 items-center">
                   <button
                     onClick={() => scrollToSection('description-section', 'description')}
-                    className={`px-2 font-medium text-lg transition-colors ${
+                    className={`flex-1 font-bold text-lg transition-colors ${
                       activeTab === 'description'
                         ? 'text-[#FF8547]'
                         : 'text-gray-500 hover:text-[#FF8547]'
@@ -275,7 +275,7 @@ export default function ProductDetailPage() {
                   </button>
                   <button
                     onClick={() => scrollToSection('curriculum-section', 'curriculum')}
-                    className={`px-2 font-medium text-lg transition-colors ${
+                    className={`flex-1 font-bold text-lg transition-colors ${
                       activeTab === 'curriculum'
                         ? 'text-[#FF8547]'
                         : 'text-gray-500 hover:text-[#FF8547]'
@@ -285,7 +285,7 @@ export default function ProductDetailPage() {
                   </button>
                   <button
                     onClick={() => scrollToSection('schedule-section', 'schedule')}
-                    className={`px-2 font-medium text-lg transition-colors ${
+                    className={`flex-1 font-bold text-lg transition-colors ${
                       activeTab === 'schedule'
                         ? 'text-[#FF8547]'
                         : 'text-gray-500 hover:text-[#FF8547]'
@@ -437,11 +437,11 @@ export default function ProductDetailPage() {
           </div>
 
           {/* 모바일: 탭 메뉴 - 항상 표시, 스크롤 시 상단 고정 */}
-          <div className="lg:hidden mb-6 sticky top-14 bg-white z-20 shadow-sm">
-            <div className="flex gap-8 h-12 items-center justify-center">
+          <div className="lg:hidden mb-6 sticky top-14 bg-white z-20 border-b border-gray-200">
+            <div className="flex h-12 items-center">
               <button
                 onClick={() => scrollToSection('mobile-description', 'description')}
-                className={`px-2 font-medium text-base transition-colors whitespace-nowrap ${
+                className={`flex-1 font-bold text-base transition-colors ${
                   activeTab === 'description'
                     ? 'text-[#FF8547]'
                     : 'text-gray-500 hover:text-[#FF8547]'
@@ -451,7 +451,7 @@ export default function ProductDetailPage() {
               </button>
               <button
                 onClick={() => scrollToSection('mobile-curriculum', 'curriculum')}
-                className={`px-2 font-medium text-base transition-colors whitespace-nowrap ${
+                className={`flex-1 font-bold text-base transition-colors ${
                   activeTab === 'curriculum'
                     ? 'text-[#FF8547]'
                     : 'text-gray-500 hover:text-[#FF8547]'
@@ -461,7 +461,7 @@ export default function ProductDetailPage() {
               </button>
               <button
                 onClick={() => scrollToSection('mobile-schedule', 'schedule')}
-                className={`px-2 font-medium text-base transition-colors whitespace-nowrap ${
+                className={`flex-1 font-bold text-base transition-colors ${
                   activeTab === 'schedule'
                     ? 'text-[#FF8547]'
                     : 'text-gray-500 hover:text-[#FF8547]'
