@@ -18,11 +18,31 @@ export default function ProductDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
+  // 카운트다운 타이머 상태 (항상 최상위에서 선언)
+  const [timeLeft, setTimeLeft] = useState({
+    days: 3,
+    hours: 0,
+    minutes: 0,
+    seconds: 48,
+  });
+
   useEffect(() => {
     if (subdomain && productId) {
       fetchProductData();
     }
   }, [subdomain, productId]);
+
+  // product가 로드되면 카운트다운 초기값 설정
+  useEffect(() => {
+    if (product) {
+      setTimeLeft({
+        days: product.modal_count_days || 3,
+        hours: product.modal_count_hours || 0,
+        minutes: product.modal_count_minutes || 0,
+        seconds: product.modal_count_seconds || 48,
+      });
+    }
+  }, [product]);
 
   const fetchProductData = async () => {
     try {
@@ -119,14 +139,7 @@ export default function ProductDetailPage() {
   const displayPrice = product.discount_price || product.price;
   const hasDiscount = product.discount_price && product.discount_price < product.discount_price;
 
-  // 카운트다운 타이머 상태 (DB에서 가져온 값 또는 기본값)
-  const [timeLeft, setTimeLeft] = useState({
-    days: product.modal_count_days || 3,
-    hours: product.modal_count_hours || 0,
-    minutes: product.modal_count_minutes || 0,
-    seconds: product.modal_count_seconds || 48,
-  });
-
+  // 카운트다운 타이머
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
