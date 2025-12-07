@@ -35,8 +35,8 @@ export default function KakaoChannelButton({ channelId }: KakaoChannelButtonProp
   if (!channelId) return null;
 
   const handleClick = () => {
-    // 카카오톡 채널 채팅 URL로 이동
-    const channelUrl = `http://pf.kakao.com/${channelId}/chat`;
+    // 카카오톡 채널 홈으로 이동
+    const channelUrl = `http://pf.kakao.com/${channelId}`;
     window.open(channelUrl, "_blank", "width=400,height=600");
   };
 
