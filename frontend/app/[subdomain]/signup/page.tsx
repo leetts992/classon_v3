@@ -8,7 +8,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Loader2, ChevronRight, ChevronLeft } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Loader2, ChevronRight, ChevronLeft, X } from "lucide-react";
 
 export default function CustomerSignupPage() {
   const params = useParams();
@@ -32,6 +38,10 @@ export default function CustomerSignupPage() {
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [agreePrivacy, setAgreePrivacy] = useState(false);
   const [agreeMarketing, setAgreeMarketing] = useState(false);
+
+  // 모달 상태
+  const [showTermsModal, setShowTermsModal] = useState(false);
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false);
 
   useEffect(() => {
     // Fetch store info to get store name
@@ -323,9 +333,13 @@ export default function CustomerSignupPage() {
               <label htmlFor="agreeTerms" className="flex-1 cursor-pointer">
                 서비스 이용약관 <span className="text-red-500">*</span>
               </label>
-              <Link href="/info/terms" target="_blank" className="text-gray-400">
+              <button
+                type="button"
+                onClick={() => setShowTermsModal(true)}
+                className="text-gray-400 hover:text-gray-600"
+              >
                 <ChevronRight className="w-5 h-5" />
-              </Link>
+              </button>
             </div>
 
             {/* 개인정보처리방침 */}
@@ -339,9 +353,13 @@ export default function CustomerSignupPage() {
               <label htmlFor="agreePrivacy" className="flex-1 cursor-pointer">
                 개인정보처리방침 <span className="text-red-500">*</span>
               </label>
-              <Link href="/info/privacy" target="_blank" className="text-gray-400">
+              <button
+                type="button"
+                onClick={() => setShowPrivacyModal(true)}
+                className="text-gray-400 hover:text-gray-600"
+              >
                 <ChevronRight className="w-5 h-5" />
-              </Link>
+              </button>
             </div>
 
             {/* 마케팅 수신 동의 */}
@@ -378,6 +396,98 @@ export default function CustomerSignupPage() {
           )}
         </Button>
       </form>
+
+      {/* 서비스 이용약관 모달 */}
+      <Dialog open={showTermsModal} onOpenChange={setShowTermsModal}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader className="sticky top-0 bg-white pb-4 border-b z-10">
+            <div className="flex items-center">
+              <button
+                onClick={() => setShowTermsModal(false)}
+                className="mr-4 p-2 hover:bg-gray-100 rounded-full"
+              >
+                <ChevronLeft className="w-6 h-6" />
+              </button>
+              <DialogTitle className="text-xl">서비스 이용약관</DialogTitle>
+            </div>
+          </DialogHeader>
+          <div className="py-4 space-y-6 text-sm text-gray-700">
+            <TermsContent />
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* 개인정보처리방침 모달 */}
+      <Dialog open={showPrivacyModal} onOpenChange={setShowPrivacyModal}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader className="sticky top-0 bg-white pb-4 border-b z-10">
+            <div className="flex items-center">
+              <button
+                onClick={() => setShowPrivacyModal(false)}
+                className="mr-4 p-2 hover:bg-gray-100 rounded-full"
+              >
+                <ChevronLeft className="w-6 h-6" />
+              </button>
+              <DialogTitle className="text-xl">개인정보처리방침</DialogTitle>
+            </div>
+          </DialogHeader>
+          <div className="py-4 space-y-6 text-sm text-gray-700">
+            <p>개인정보처리방침 내용...</p>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
+  );
+}
+
+// 서비스 이용약관 컨텐츠 컴포넌트
+function TermsContent() {
+  return (
+    <>
+      <section>
+        <h3 className="font-semibold text-base mb-2">제1조 목적</h3>
+        <p>본 이용약관은 "클래스온"(이하 "사이트")의 서비스의 이용조건과 운영에 관한 제반 사항 규정을 목적으로 합니다.</p>
+      </section>
+
+      <section>
+        <h3 className="font-semibold text-base mb-2">제2조 용어의 정의</h3>
+        <p className="mb-2">본 약관에서 사용되는 주요한 용어의 정의는 다음과 같습니다.</p>
+        <p className="mb-2">본 이용약관은 "클래스온"(이하 "사이트")의 서비스의 이용조건과 운영에 관한 제반 사항 규정을 목적으로 합니다.</p>
+        <div className="ml-4 space-y-1">
+          <p>① 회원 : 사이트의 약관에 동의하고 개인정보를 제공하여 회원등록을 한 자로서, 사이트와의 이용계약을 체결하고 사이트를 이용하는 이용자를 말합니다.</p>
+          <p>② 이용계약 : 사이트 이용과 관련하여 사이트와 회원간에 체결 하는 계약을 말합니다.</p>
+          <p>③ 회원 아이디(이하 "ID") : 회원의 식별과 회원의 서비스 이용을 위하여 회원별로 부여하는 고유한 문자와 숫자의 조합을 말합니다.</p>
+          <p>④ 비밀번호 : 회원이 부여받은 ID와 일치된 회원임을 확인하고 회원의 권익 보호를 위하여 회원이 선정한 문자와 숫자의 조합을 말합니다.</p>
+          <p>⑤ 운영자 : 서비스에 홈페이지를 개설하여 운영하는 운영자를 말합니다.</p>
+          <p>⑥ 해지 : 회원이 이용계약을 해약하는 것을 말합니다.</p>
+        </div>
+      </section>
+
+      <section>
+        <h3 className="font-semibold text-base mb-2">제3조 약관 외 준칙</h3>
+        <p>운영자는 필요한 경우 별도로 운영정책을 공지 안내할 수 있으며, 본 약관과 운영정책이 중첩될 경우 운영정책이 우선 적용됩니다.</p>
+      </section>
+
+      <section>
+        <h3 className="font-semibold text-base mb-2">제4조 이용계약 체결</h3>
+        <p className="mb-1">① 이용계약은 회원으로 등록하여 사이트를 이용하려는 자의 본 약관 내용에 대한 동의와 가입신청에 대하여 운영자의 이용승낙으로 성립합니다.</p>
+        <p>② 회원으로 등록하여 서비스를 이용하려는 자는 사이트 가입신청 시 본 약관을 읽고 아래에 있는 "동의합니다"를 선택하는 것으로 본 약관에 대한 동의 의사 표시를 합니다.</p>
+      </section>
+
+      <section>
+        <h3 className="font-semibold text-base mb-2">제5조 서비스 이용 신청</h3>
+        <p className="mb-1">① 회원으로 등록하여 사이트를 이용하려는 이용자는 사이트에서 요청하는 제반정보(이용자ID,비밀번호, 닉네임 등)를 제공해야 합니다.</p>
+        <p>② 타인의 정보를 도용하거나 허위의 정보를 등록하는 등 본인의 진정한 정보를 등록하지 않은 회원은 사이트 이용과 관련하여 아무런 권리를 주장할 수 없으며, 관계 법령에 따라 처벌받을 수 있습니다.</p>
+      </section>
+
+      <section>
+        <h3 className="font-semibold text-base mb-2">제6조 개인정보처리방침</h3>
+        <p className="mb-1">사이트 및 운영자는 회원가입 시 제공한 개인정보 중 비밀번호를 가지고 있지 않으며 이와 관련된 부분은 사이트의 개인정보처리방침을 따릅니다.운영자는 관계 법령이 정하는 바에 따라 회원등록정보를 포함한 회원의 개인정보를 보호하기 위하여 노력합니다.</p>
+        <p className="mb-1">회원의 개인정보보호에 관하여 관계법령 및 사이트가 정하는 개인정보처리방침에 정한 바에 따릅니다.</p>
+        <p>단, 회원의 귀책 사유로 인해 노출된 정보에 대해 운영자는 일체의 책임을 지지 않습니다.운영자는 회원이 미풍양속에 저해되거나 국가안보에 위배되는 게시물 등 위법한 게시물을 등록 · 배포할 경우 관련 기관의 요청이 있을 시 회원의 자료를 열람 및 해당 자료를 관련 기관에 제출할 수 있습니다.</p>
+      </section>
+
+      <p className="text-xs text-gray-500 pt-4">... 이하 약관 전문은 별도 페이지에서 확인하실 수 있습니다.</p>
+    </>
   );
 }
