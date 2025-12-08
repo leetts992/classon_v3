@@ -16,7 +16,7 @@ async def upload_image(
     Upload an image file (thumbnail, profile image, etc.)
 
     Allowed formats: jpg, jpeg, png, gif, webp
-    Max size: 5MB
+    Max size: 10MB
     """
     # Check file extension
     allowed_extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp']
@@ -28,12 +28,12 @@ async def upload_image(
             detail=f"Invalid file type. Allowed: {', '.join(allowed_extensions)}"
         )
 
-    # Check file size (5MB limit)
+    # Check file size (10MB limit)
     content = await file.read()
-    if len(content) > 5 * 1024 * 1024:  # 5MB
+    if len(content) > 10 * 1024 * 1024:  # 10MB
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="File size exceeds 5MB limit"
+            detail="File size exceeds 10MB limit"
         )
 
     try:
