@@ -48,7 +48,7 @@ export default function ProductCard({
     <motion.div
       whileHover={{ y: -4 }}
       transition={{ duration: 0.2 }}
-      className="h-full"
+      className="h-full scale-[0.6] origin-top-left"
     >
       <Card className="h-full flex flex-col overflow-hidden border hover:border-blue-200 hover:shadow-lg transition-all">
         {/* Thumbnail */}
@@ -90,61 +90,48 @@ export default function ProductCard({
           </div>
         </Link>
 
-        <CardContent className="flex-1 p-4">
-          <Link href={productUrl}>
+        <Link href={productUrl}>
+          <CardContent className="flex-1 p-4">
             <h3 className="font-semibold text-lg mb-2 line-clamp-2 hover:text-primary transition-colors">
               {title}
             </h3>
-          </Link>
 
-          {description && (
-            <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
-              {description}
-            </p>
-          )}
+            {description && (
+              <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
+                {description}
+              </p>
+            )}
 
-          {/* Rating */}
-          {rating > 0 && (
-            <div className="flex items-center space-x-1 mb-3">
-              <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-              <span className="text-sm font-medium">{rating.toFixed(1)}</span>
-              <span className="text-sm text-muted-foreground">
-                ({reviewCount})
-              </span>
-            </div>
-          )}
-
-          {/* Price */}
-          <div className="flex items-baseline space-x-2">
-            {discountPrice ? (
-              <>
-                <span className="text-2xl font-bold text-primary">
-                  ₩{finalPrice.toLocaleString()}
+            {/* Rating */}
+            {rating > 0 && (
+              <div className="flex items-center space-x-1 mb-3">
+                <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                <span className="text-sm font-medium">{rating.toFixed(1)}</span>
+                <span className="text-sm text-muted-foreground">
+                  ({reviewCount})
                 </span>
-                <span className="text-sm text-muted-foreground line-through">
+              </div>
+            )}
+
+            {/* Price */}
+            <div className="flex items-baseline space-x-2">
+              {discountPrice ? (
+                <>
+                  <span className="text-2xl font-bold text-primary">
+                    ₩{finalPrice.toLocaleString()}
+                  </span>
+                  <span className="text-sm text-muted-foreground line-through">
+                    ₩{price.toLocaleString()}
+                  </span>
+                </>
+              ) : (
+                <span className="text-2xl font-bold">
                   ₩{price.toLocaleString()}
                 </span>
-              </>
-            ) : (
-              <span className="text-2xl font-bold">
-                ₩{price.toLocaleString()}
-              </span>
-            )}
-          </div>
-        </CardContent>
-
-        <CardFooter className="p-4 pt-0">
-          <Button
-            className="w-full"
-            onClick={(e) => {
-              e.preventDefault();
-              onAddToCart?.();
-            }}
-          >
-            <ShoppingCart className="w-4 h-4 mr-2" />
-            장바구니 담기
-          </Button>
-        </CardFooter>
+              )}
+            </div>
+          </CardContent>
+        </Link>
       </Card>
     </motion.div>
   );
