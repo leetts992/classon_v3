@@ -676,8 +676,8 @@ export default function SettingsPage() {
                         {/* 미리보기 */}
                         {slide.image_url && (
                           <div className="space-y-2">
-                            <Label>미리보기</Label>
-                            <div className="relative aspect-[16/5] rounded-lg overflow-hidden border">
+                            <Label>미리보기 (실제 스토어 크기)</Label>
+                            <div className="relative h-[280px] md:h-[350px] lg:h-[420px] rounded-lg overflow-hidden border bg-black">
                               <img
                                 src={slide.image_url}
                                 alt="배너 미리보기"
