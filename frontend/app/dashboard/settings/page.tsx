@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Save, Upload, Eye, Copy, Check, ExternalLink, Plus, Trash2, GripVertical, Image as ImageIcon, ChevronLeft, ChevronRight } from "lucide-react";
+import { Save, Upload, Eye, Copy, Check, ExternalLink, Plus, Trash2, GripVertical, Image as ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -15,13 +15,13 @@ import {
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { instructorAPI, BannerSlide, uploadAPI } from "@/lib/api";
+import Banner from "@/components/store/Banner";
 
 export default function SettingsPage() {
   const [isCopied, setIsCopied] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploadingBannerId, setUploadingBannerId] = useState<string | null>(null);
-  const [previewSlideIndex, setPreviewSlideIndex] = useState(0);
   const [settings, setSettings] = useState({
     storeName: "",
     subdomain: "",
@@ -551,85 +551,29 @@ export default function SettingsPage() {
 
         {/* 배너관리 탭 */}
         <TabsContent value="banner" className="space-y-6">
-          {/* 전체 배너 미리보기 */}
+          {/* 전체 배너 미리보기 - 실제 Banner 컴포넌트 사용 */}
           {bannerSlides.length > 0 && bannerSlides.some(slide => slide.image_url) && (
             <Card>
               <CardHeader>
-                <CardTitle>배너 미리보기 (실제 스토어 크기)</CardTitle>
+                <CardTitle>배너 미리보기 (실제 스토어와 동일)</CardTitle>
                 <CardDescription>
-                  실제 스토어에 표시되는 배너의 모습을 확인하세요
+                  실제 스토어에 표시되는 배너의 모습을 그대로 확인하세요
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="relative w-full h-[280px] md:h-[350px] lg:h-[420px] overflow-hidden bg-black rounded-lg">
-                  {/* 슬라이드 컨테이너 */}
-                  <div className="relative w-full h-full">
-                    {bannerSlides
+                <div className="rounded-lg overflow-hidden">
+                  <Banner
+                    slides={bannerSlides
                       .filter(slide => slide.image_url)
-                      .map((slide, index) => (
-                        <div
-                          key={slide.id}
-                          className={`absolute inset-0 transition-opacity duration-700 ${
-                            index === previewSlideIndex ? "opacity-100 z-10" : "opacity-0 z-0"
-                          }`}
-                        >
-                          <img
-                            src={slide.image_url}
-                            alt={`배너 ${index + 1}`}
-                            className="w-full h-full object-cover"
-                            onError={(e) => {
-                              e.currentTarget.src = "https://via.placeholder.com/1920x600?text=Image+Not+Found";
-                            }}
-                          />
-                        </div>
-                      ))}
-                  </div>
-
-                  {/* 이전/다음 버튼 (슬라이드가 2개 이상일 때만 표시) */}
-                  {bannerSlides.filter(s => s.image_url).length > 1 && (
-                    <>
-                      <button
-                        onClick={() => {
-                          const validSlides = bannerSlides.filter(s => s.image_url);
-                          setPreviewSlideIndex((prev) => (prev - 1 + validSlides.length) % validSlides.length);
-                        }}
-                        className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white p-2 rounded-full transition-all"
-                        aria-label="이전 슬라이드"
-                      >
-                        <ChevronLeft className="w-6 h-6" />
-                      </button>
-                      <button
-                        onClick={() => {
-                          const validSlides = bannerSlides.filter(s => s.image_url);
-                          setPreviewSlideIndex((prev) => (prev + 1) % validSlides.length);
-                        }}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white p-2 rounded-full transition-all"
-                        aria-label="다음 슬라이드"
-                      >
-                        <ChevronRight className="w-6 h-6" />
-                      </button>
-                    </>
-                  )}
-
-                  {/* 인디케이터 (슬라이드가 2개 이상일 때만 표시) */}
-                  {bannerSlides.filter(s => s.image_url).length > 1 && (
-                    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex gap-2">
-                      {bannerSlides
-                        .filter(s => s.image_url)
-                        .map((_, index) => (
-                          <button
-                            key={index}
-                            onClick={() => setPreviewSlideIndex(index)}
-                            className={`w-2 h-2 rounded-full transition-all ${
-                              index === previewSlideIndex
-                                ? "bg-white w-8"
-                                : "bg-white/50 hover:bg-white/75"
-                            }`}
-                            aria-label={`슬라이드 ${index + 1}로 이동`}
-                          />
-                        ))}
-                    </div>
-                  )}
+                      .map((slide) => ({
+                        id: slide.id,
+                        imageUrl: slide.image_url,
+                        title: slide.title,
+                        subtitle: slide.subtitle,
+                        linkUrl: slide.link_url,
+                      }))}
+                    autoPlayInterval={5000}
+                  />
                 </div>
               </CardContent>
             </Card>
