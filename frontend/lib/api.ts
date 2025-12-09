@@ -785,3 +785,192 @@ export const customersAPI = {
       { method: 'GET' }
     ),
 };
+
+// ========== Ebook Types ==========
+
+export interface EbookChapter {
+  id: string;
+  product_id: string;
+  title: string;
+  description?: string;
+  order_index: number;
+  is_published: boolean;
+  created_at: string;
+  updated_at?: string;
+  sections?: EbookSection[];
+}
+
+export interface EbookSection {
+  id: string;
+  chapter_id: string;
+  title: string;
+  content?: any; // Tiptap JSON
+  content_html?: string;
+  order_index: number;
+  reading_time?: number;
+  is_published: boolean;
+  is_free: boolean;
+  created_at: string;
+  updated_at?: string;
+}
+
+export interface EbookChapterCreate {
+  product_id: string;
+  title: string;
+  description?: string;
+  order_index?: number;
+  is_published?: boolean;
+}
+
+export interface EbookChapterUpdate {
+  title?: string;
+  description?: string;
+  order_index?: number;
+  is_published?: boolean;
+}
+
+export interface EbookSectionCreate {
+  chapter_id: string;
+  title: string;
+  content?: any;
+  content_html?: string;
+  order_index?: number;
+  reading_time?: number;
+  is_published?: boolean;
+  is_free?: boolean;
+}
+
+export interface EbookSectionUpdate {
+  title?: string;
+  content?: any;
+  content_html?: string;
+  order_index?: number;
+  reading_time?: number;
+  is_published?: boolean;
+  is_free?: boolean;
+}
+
+export interface EbookStructure {
+  product_id: string;
+  product_title: string;
+  chapters: EbookChapter[];
+}
+
+export interface UserEbookProgress {
+  id: string;
+  customer_id: string;
+  section_id: string;
+  is_completed: boolean;
+  reading_progress: number;
+  last_read_at: string;
+  created_at: string;
+  updated_at?: string;
+}
+
+export interface UserEbookBookmark {
+  id: string;
+  customer_id: string;
+  section_id: string;
+  note?: string;
+  position?: number;
+  created_at: string;
+  updated_at?: string;
+}
+
+// ========== Ebook API ==========
+
+// Instructor APIs
+export const ebookInstructorAPI = {
+  // Create chapter
+  createChapter: (data: EbookChapterCreate) =>
+    authenticatedRequest<EbookChapter>('/ebook/instructor/chapters', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  // Get product chapters
+  getProductChapters: (productId: string) =>
+    authenticatedRequest<EbookChapter[]>(`/ebook/instructor/products/${productId}/chapters`, {
+      method: 'GET',
+    }),
+
+  // Update chapter
+  updateChapter: (chapterId: string, data: EbookChapterUpdate) =>
+    authenticatedRequest<EbookChapter>(`/ebook/instructor/chapters/${chapterId}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+
+  // Delete chapter
+  deleteChapter: (chapterId: string) =>
+    authenticatedRequest<void>(`/ebook/instructor/chapters/${chapterId}`, {
+      method: 'DELETE',
+    }),
+
+  // Create section
+  createSection: (data: EbookSectionCreate) =>
+    authenticatedRequest<EbookSection>('/ebook/instructor/sections', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  // Update section
+  updateSection: (sectionId: string, data: EbookSectionUpdate) =>
+    authenticatedRequest<EbookSection>(`/ebook/instructor/sections/${sectionId}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+
+  // Delete section
+  deleteSection: (sectionId: string) =>
+    authenticatedRequest<void>(`/ebook/instructor/sections/${sectionId}`, {
+      method: 'DELETE',
+    }),
+};
+
+// Customer APIs
+export const ebookCustomerAPI = {
+  // Get ebook structure (with purchase verification)
+  getEbookStructure: (productId: string) =>
+    authenticatedRequest<EbookStructure>(`/ebook/customer/products/${productId}/structure`, {
+      method: 'GET',
+    }),
+
+  // Get section content
+  getSectionContent: (sectionId: string) =>
+    authenticatedRequest<EbookSection>(`/ebook/customer/sections/${sectionId}`, {
+      method: 'GET',
+    }),
+
+  // Update progress
+  updateProgress: (sectionId: string, data: { is_completed: boolean; reading_progress: number }) =>
+    authenticatedRequest<UserEbookProgress>('/ebook/customer/progress', {
+      method: 'POST',
+      body: JSON.stringify({ section_id: sectionId, ...data }),
+    }),
+
+  // Get product progress
+  getProductProgress: (productId: string) =>
+    authenticatedRequest<UserEbookProgress[]>(`/ebook/customer/products/${productId}/progress`, {
+      method: 'GET',
+    }),
+
+  // Create bookmark
+  createBookmark: (sectionId: string, data: { note?: string; position?: number }) =>
+    authenticatedRequest<UserEbookBookmark>('/ebook/customer/bookmarks', {
+      method: 'POST',
+      body: JSON.stringify({ section_id: sectionId, ...data }),
+    }),
+
+  // Get product bookmarks
+  getProductBookmarks: (productId: string) =>
+    authenticatedRequest<UserEbookBookmark[]>(`/ebook/customer/products/${productId}/bookmarks`, {
+      method: 'GET',
+    }),
+
+  // Delete bookmark
+  deleteBookmark: (bookmarkId: string) =>
+    authenticatedRequest<void>(`/ebook/customer/bookmarks/${bookmarkId}`, {
+      method: 'DELETE',
+    }),
+};
