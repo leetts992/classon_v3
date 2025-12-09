@@ -98,8 +98,8 @@ export default function SettingsPage() {
       return `http://localhost:${port || '3000'}/${settings.subdomain}`;
     }
 
-    // 배포 환경 (서브도메인 방식)
-    return `https://${settings.subdomain}.class-on.kr`;
+    // 배포 환경 (경로 기반 방식)
+    return `https://class-on.kr/${settings.subdomain}`;
   };
 
   const storeUrl = getStoreUrl();
