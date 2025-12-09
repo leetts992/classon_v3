@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Plus, Search, MoreVertical, Edit, Trash2, Loader2 } from "lucide-react";
+import { Plus, Search, MoreVertical, Edit, Trash2, Loader2, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -188,6 +188,12 @@ export default function ProductsPage() {
                           <Edit className="mr-2 h-4 w-4" />
                           수정
                         </DropdownMenuItem>
+                        {product.type === 'ebook' && (
+                          <DropdownMenuItem onClick={() => router.push(`/dashboard/products/${product.id}/ebook`)}>
+                            <BookOpen className="mr-2 h-4 w-4" />
+                            콘텐츠 관리
+                          </DropdownMenuItem>
+                        )}
                         <DropdownMenuItem
                           className="text-red-600"
                           onClick={() => handleDelete(product.id)}

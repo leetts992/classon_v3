@@ -197,12 +197,16 @@ export default function MyCoursesPage() {
                       className="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white"
                       onClick={(e) => {
                         e.stopPropagation();
-                        router.push(`/my-courses/${course.id}`);
+                        const path = course.type === "ebook"
+                          ? `/my-courses/${course.id}/read`
+                          : `/my-courses/${course.id}`;
+                        router.push(path);
                       }}
                     >
-                      {course.progress && course.progress > 0
-                        ? "이어서 학습하기"
-                        : "학습 시작하기"}
+                      {course.type === "ebook" ? "읽기" :
+                        course.progress && course.progress > 0
+                          ? "이어서 학습하기"
+                          : "학습 시작하기"}
                     </Button>
                   </div>
                 </div>
