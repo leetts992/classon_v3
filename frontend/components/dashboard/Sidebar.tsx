@@ -76,6 +76,25 @@ export default function Sidebar() {
     fetchInstructorInfo();
   }, []);
 
+  // 환경에 따라 다른 URL 생성
+  const getStoreUrl = () => {
+    if (!subdomain) return '';
+    if (typeof window === 'undefined') return '';
+
+    const hostname = window.location.hostname;
+    const port = window.location.port;
+
+    // 로컬 개발 환경
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return `http://localhost:${port || '3000'}/${subdomain}`;
+    }
+
+    // 배포 환경 (서브도메인 방식)
+    return `https://${subdomain}.class-on.kr`;
+  };
+
+  const storeUrl = getStoreUrl();
+
   const handleLogout = () => {
     // Clear all auth data
     localStorage.removeItem("access_token");
@@ -128,12 +147,12 @@ export default function Sidebar() {
 
         {/* Bottom Actions */}
         <div className="border-t p-4 space-y-2">
-          {subdomain && (
+          {storeUrl && (
             <Button variant="outline" className="w-full justify-start" asChild>
-              <Link href={`/${subdomain}`} target="_blank">
+              <a href={storeUrl} target="_blank" rel="noopener noreferrer">
                 <ExternalLink className="mr-2 h-4 w-4" />
                 내 스토어 보기
-              </Link>
+              </a>
             </Button>
           )}
           <Button
